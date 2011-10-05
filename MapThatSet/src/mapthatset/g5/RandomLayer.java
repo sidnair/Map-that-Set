@@ -34,23 +34,23 @@ public class RandomLayer {
 		return -1;
 	}
 	
-//	public static void main(String[] args) {
-//		int length = 9;
-//		RandomLayer rl = new RandomLayer(length);
-//		for(int i=0;i<length;i++){
-//			System.out.print(i);
-//			System.out.print(" ");
-//		}
-//		System.out.println();
-//		for(int i=0;i<length;i++){
-//			System.out.print(rl.mapTo(i));
-//			System.out.print(" ");
-//		}
-//		System.out.println();
-//		for(int i=0;i<length;i++){
-//			System.out.print(rl.findIndex(i));
-//			System.out.print(" ");
-//		}
-//	}
+	public static void main(String[] args) {
+		int length = 9;
+		RandomLayer rl = new RandomLayer(length);
+		for(int i=0;i<length;i++){
+			System.out.print(i);
+			System.out.print(" ");
+		}
+		System.out.println();
+		for(int i=0;i<length;i++){
+			System.out.print(rl.mapTo(i));
+			System.out.print(" ");
+		}
+		System.out.println();
+		for(int i=0;i<length;i++){
+			System.out.print(rl.findIndex(i));
+			System.out.print(" ");
+		}
+	}
 
 }
