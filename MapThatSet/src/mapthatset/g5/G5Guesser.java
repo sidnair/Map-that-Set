@@ -2,10 +2,7 @@ package mapthatset.g5;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeSet;
 
 import mapthatset.sim.Guesser;
@@ -15,6 +12,7 @@ public class G5Guesser extends Guesser {
 
 	private int mappingLength;
 	private int intLastQueryIndex = 0;
+	private int iNeedAnotherIntAndImTooTiredToNameIt = 0;
 	private Map <Integer, TreeSet<Integer>> possibleMappings;
 	private TreeSet <Integer> notSolvedYet;
 	private ArrayList<Integer> guess = new ArrayList<Integer>();
@@ -45,6 +43,7 @@ public class G5Guesser extends Guesser {
 			currentQuery.add(++intLastQueryIndex);
 			if(intLastQueryIndex < mappingLength)
 				currentQuery.add(++intLastQueryIndex);
+			iNeedAnotherIntAndImTooTiredToNameIt = intLastQueryIndex;
 			return new GuesserAction("q", currentQuery);
 		}
 		for(int i : possibleMappings.keySet()){
@@ -70,19 +69,26 @@ public class G5Guesser extends Guesser {
 		if(notSolvedYet.isEmpty()){
 			return new GuesserAction("g", guess);
 		}
+		if (iNeedAnotherIntAndImTooTiredToNameIt >= notSolvedYet.size()){
+			iNeedAnotherIntAndImTooTiredToNameIt = notSolvedYet.first();
+			++intLastQueryIndex;
+		}
+		ArrayList <Integer> currentQuery = new ArrayList <Integer>();
+		currentQuery.add(iNeedAnotherIntAndImTooTiredToNameIt);
+		return new GuesserAction("q", currentQuery);
 		
 		
-		
-		return null;
+		//return null;
 	}
 	
 	@Override
 	public void setResult( ArrayList< Integer > alResult ) {
+		int last = 0;
 		for(int i=0; i < alResult.size(); ++i){
-			TreeSet <Integer> temp = (TreeSet<Integer>) possibleMappings.get(intLastQueryIndex - 1);
+			TreeSet <Integer> temp = (TreeSet<Integer>) possibleMappings.get(iNeedAnotherIntAndImTooTiredToNameIt);
 			temp.add(alResult.get(i));
-			if (intLastQueryIndex <= possibleMappings.size()){
-				TreeSet <Integer> temp2 = (TreeSet<Integer>) possibleMappings.get(intLastQueryIndex);
+			if (iNeedAnotherIntAndImTooTiredToNameIt <= notSolvedYet.size()){
+				TreeSet <Integer> temp2 = (TreeSet<Integer>) possibleMappings.get(iNeedAnotherIntAndImTooTiredToNameIt);
 				temp2.add(alResult.get(i));
 			}
 		}
