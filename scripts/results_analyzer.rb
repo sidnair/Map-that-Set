@@ -28,8 +28,6 @@ Dir.foreach(root_path) do |path|
     p "New data:"
     p new_scores
     exit 1
-  else
-    exit 0
   end
 
 end
