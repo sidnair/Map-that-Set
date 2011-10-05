@@ -76,7 +76,7 @@ public class G5Guesser extends Guesser {
 		}
 		iNeedAnotherIntAndImTooTiredToNameIt = notSolvedYet.first();
 		lastQueryIndex += 10;
-		ArrayList<Integer> currentQuery = new ArrayList<Integer>();
+		ArrayList<Integer> currentQuery = new ArrayList<Integer>();	
 		currentQuery.add(iNeedAnotherIntAndImTooTiredToNameIt);
 		return new GuesserAction("q", currentQuery);
 	}
@@ -95,17 +95,17 @@ public class G5Guesser extends Guesser {
 				}
 			}
 		} else {
-			for (int i = 0; i < result.size(); ++i) {
+			for (Integer res : result) {
 				TreeSet<Integer> temp =
 						(TreeSet<Integer>)
 						possibleMappings.get(iNeedAnotherIntAndImTooTiredToNameIt);
 				temp.clear();
-				temp.add(result.get(i));
+				temp.add(res);
 				temp = (TreeSet<Integer>)possibleMappings.get(
 						iNeedAnotherIntAndImTooTiredToNameIt + 1);
 				if (DEBUG) {
 					if(temp != null) {
-						System.out.println(temp.remove(result.get(i)));
+						System.out.println(temp.remove(res));
 					}
 				}
 			}

@@ -1,0 +1,1 @@
+40 -classpath MapThatSet/bin/:scripts/ mapthatset.sim.MapThatSet
