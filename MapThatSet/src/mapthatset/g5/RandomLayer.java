@@ -1,7 +1,6 @@
 package mapthatset.g5;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Random;
 
 public class RandomLayer {
@@ -11,7 +10,7 @@ public class RandomLayer {
 		Random r = new Random();
 		randomLayer = new ArrayList<Integer>();
 		ArrayList<Integer> left = new ArrayList<Integer>();
-		for(int i=0;i<mappingLength;i++){
+		for(int i=1;i<=mappingLength;i++){
 			left.add(i);
 		}
 		for (int i=0;i<mappingLength;i++){
@@ -21,33 +20,26 @@ public class RandomLayer {
 		}		
 	}
 
-	protected Integer mapTo(int index) {
-		return randomLayer.get(index);
+	protected Integer getMapping(int number) {
+		// The mapping has a 1-based index, and the randomLayer ArrayList has a
+		// 0-based index.
+		return randomLayer.get(number - 1);
 	}
 	
-	protected int findIndex(Integer mapTo) {
-		for(int index=0;index<randomLayer.size();index++){
-			if(randomLayer.get(index)==mapTo){
-				return index;
-			}
-		}
-		return -1;
+	// Returns a zero-based index.
+	protected int findIndex(int mapTo) {
+		return randomLayer.indexOf(mapTo);
 	}
 	
 	public static void main(String[] args) {
 		int length = 9;
 		RandomLayer rl = new RandomLayer(length);
-		for(int i=0;i<length;i++){
-			System.out.print(i);
+		for(int i=1;i<=length;i++){
+			System.out.print(rl.getMapping(i));
 			System.out.print(" ");
 		}
 		System.out.println();
-		for(int i=0;i<length;i++){
-			System.out.print(rl.mapTo(i));
-			System.out.print(" ");
-		}
-		System.out.println();
-		for(int i=0;i<length;i++){
+		for(int i=1;i<=length;i++){
 			System.out.print(rl.findIndex(i));
 			System.out.print(" ");
 		}
