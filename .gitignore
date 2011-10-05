@@ -3,5 +3,5 @@
 *#*#
 isnorkcode/bin
 *.swp
-script/output/*
+scripts/output/*.txt
 *.class
