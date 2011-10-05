@@ -43,6 +43,9 @@ public class G5Guesser extends Guesser {
 			currentQuery.add(++intLastQueryIndex);
 			if(intLastQueryIndex < mappingLength)
 				currentQuery.add(++intLastQueryIndex);
+			else{
+				++intLastQueryIndex;
+			}
 			iNeedAnotherIntAndImTooTiredToNameIt = intLastQueryIndex;
 			return new GuesserAction("q", currentQuery);
 		}
@@ -60,7 +63,6 @@ public class G5Guesser extends Guesser {
 			if(possibleMappings.get(current).size() == 1){
 				guess.remove(current - 1);
 				guess.add(current - 1, possibleMappings.get(current).first());
-				notSolvedYet.remove(current);
 			}
 			else
 				tempTreeSet.add(current);
@@ -69,10 +71,8 @@ public class G5Guesser extends Guesser {
 		if(notSolvedYet.isEmpty()){
 			return new GuesserAction("g", guess);
 		}
-		if (iNeedAnotherIntAndImTooTiredToNameIt >= notSolvedYet.size()){
-			iNeedAnotherIntAndImTooTiredToNameIt = notSolvedYet.first();
-			++intLastQueryIndex;
-		}
+		iNeedAnotherIntAndImTooTiredToNameIt = notSolvedYet.first();
+		intLastQueryIndex+=10;
 		ArrayList <Integer> currentQuery = new ArrayList <Integer>();
 		currentQuery.add(iNeedAnotherIntAndImTooTiredToNameIt);
 		return new GuesserAction("q", currentQuery);
@@ -83,13 +83,24 @@ public class G5Guesser extends Guesser {
 	
 	@Override
 	public void setResult( ArrayList< Integer > alResult ) {
-		int last = 0;
-		for(int i=0; i < alResult.size(); ++i){
-			TreeSet <Integer> temp = (TreeSet<Integer>) possibleMappings.get(iNeedAnotherIntAndImTooTiredToNameIt);
-			temp.add(alResult.get(i));
-			if (iNeedAnotherIntAndImTooTiredToNameIt <= notSolvedYet.size()){
-				TreeSet <Integer> temp2 = (TreeSet<Integer>) possibleMappings.get(iNeedAnotherIntAndImTooTiredToNameIt);
-				temp2.add(alResult.get(i));
+		if ((intLastQueryIndex-2) < mappingLength) {
+			for (int i = 0; i < alResult.size(); ++i) {
+				TreeSet<Integer> temp = (TreeSet<Integer>) possibleMappings.get(intLastQueryIndex - 1);
+				temp.add(alResult.get(i));
+				if (intLastQueryIndex <= mappingLength) {
+					TreeSet<Integer> temp2 = (TreeSet<Integer>) possibleMappings.get(intLastQueryIndex);
+					temp2.add(alResult.get(i));
+				}
+			}
+		}
+		else{
+			for (int i = 0; i < alResult.size(); ++i) {
+				TreeSet<Integer> temp = (TreeSet<Integer>) possibleMappings.get(iNeedAnotherIntAndImTooTiredToNameIt);
+				temp.clear();
+				temp.add(alResult.get(i));
+				temp = (TreeSet<Integer>) possibleMappings.get(iNeedAnotherIntAndImTooTiredToNameIt + 1);
+				if(temp != null)
+					System.out.println(temp.remove(alResult.get(i)));
 			}
 		}
 	}
