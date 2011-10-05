@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import mapthatset.sim.Guesser;
 import mapthatset.sim.GuesserAction;
@@ -14,20 +15,20 @@ public class G5Guesser extends Guesser {
 
 	private int mappingLength;
 	private int intLastQueryIndex = 0;
-	private Map <Integer, Set<Integer>> possibleMappings;
-	private Set <Integer> notSolvedYet;
+	private Map <Integer, TreeSet<Integer>> possibleMappings;
+	private TreeSet <Integer> notSolvedYet;
 	private ArrayList<Integer> guess = new ArrayList<Integer>();
 		
 	public void startNewMapping(int intMappingLength) {
 		this.mappingLength = intMappingLength;
 		intLastQueryIndex = 0;
 		guess = new ArrayList<Integer>();
-		possibleMappings = new HashMap <Integer, Set<Integer>> ();
-		notSolvedYet = new HashSet  <Integer> ();
+		possibleMappings = new HashMap <Integer, TreeSet<Integer>> ();
+		notSolvedYet = new TreeSet  <Integer> ();
 		
 		// I dont like this, but its good for now...
 		for(int i = 1; i <= intMappingLength; ++i){
-			possibleMappings.put(i, new HashSet<Integer>());
+			possibleMappings.put(i, new TreeSet<Integer>());
 			notSolvedYet.add(i);
 			guess.add(0);
 			/*HashSet<Integer> temp = (HashSet<Integer>) possibleMappings.get(i);
@@ -42,7 +43,8 @@ public class G5Guesser extends Guesser {
 		if(intLastQueryIndex < mappingLength){
 			ArrayList <Integer> currentQuery = new ArrayList <Integer>();
 			currentQuery.add(++intLastQueryIndex);
-			currentQuery.add(++intLastQueryIndex);
+			if(intLastQueryIndex < mappingLength)
+				currentQuery.add(++intLastQueryIndex);
 			return new GuesserAction("q", currentQuery);
 		}
 		for(int i : possibleMappings.keySet()){
@@ -52,15 +54,19 @@ public class G5Guesser extends Guesser {
 			}
 			System.out.println();
 		}
-		Iterator <Integer> iter = notSolvedYet.iterator();
-		while(iter.hasNext()){
-			int current = iter.next();
-			Object[] arr = possibleMappings.get(current).toArray();
-			if(arr.length == 1){
-				guess.add(current - 1, (Integer) arr[0]);
+		// I need a better way to do this
+		TreeSet <Integer> tempTreeSet = new TreeSet <Integer>();
+		while(!notSolvedYet.isEmpty()){
+			int current = notSolvedYet.pollFirst();
+			if(possibleMappings.get(current).size() == 1){
+				guess.remove(current - 1);
+				guess.add(current - 1, possibleMappings.get(current).first());
 				notSolvedYet.remove(current);
 			}
+			else
+				tempTreeSet.add(current);
 		}
+		notSolvedYet = tempTreeSet;
 		if(notSolvedYet.isEmpty()){
 			return new GuesserAction("g", guess);
 		}
@@ -73,10 +79,12 @@ public class G5Guesser extends Guesser {
 	@Override
 	public void setResult( ArrayList< Integer > alResult ) {
 		for(int i=0; i < alResult.size(); ++i){
-			HashSet <Integer> temp = (HashSet<Integer>) possibleMappings.get(intLastQueryIndex - 1);
-			HashSet <Integer> temp2 = (HashSet<Integer>) possibleMappings.get(intLastQueryIndex);
+			TreeSet <Integer> temp = (TreeSet<Integer>) possibleMappings.get(intLastQueryIndex - 1);
 			temp.add(alResult.get(i));
-			temp2.add(alResult.get(i));
+			if (intLastQueryIndex <= possibleMappings.size()){
+				TreeSet <Integer> temp2 = (TreeSet<Integer>) possibleMappings.get(intLastQueryIndex);
+				temp2.add(alResult.get(i));
+			}
 		}
 	}
 	
