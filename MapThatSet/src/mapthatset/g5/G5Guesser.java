@@ -20,7 +20,7 @@ public class G5Guesser extends Guesser {
 	@Override
 	public GuesserAction nextAction() {
 		intLastQueryIndex++;
-		if ( intLastQueryIndex > mappingLength ) {
+		if (intLastQueryIndex > mappingLength) {
 			return new GuesserAction("g", guess);
 		} else {
 			ArrayList<Integer> queryContent = new ArrayList<Integer>();
