@@ -4,3 +4,10 @@ http://www.cs.columbia.edu/~kar/4444f11/node18.html.
 Group 5
 
 Authors: Sid Nair, Tao Song, and Nate Weiss
+
+Initial functionality:
+1. We have a layer of random mapping.
+2. We try to implement the methed mentioned by Siyang last class, to make sure our guesser can finish in n queries
+
+
+
