@@ -30,7 +30,7 @@ public class G5Guesser extends Guesser {
 	}
 	
 	@Override
-	public void setResult(ArrayList< Integer > alResult) {
+	public void setResult( ArrayList< Integer > alResult ) {
 		guess.add(alResult.get(0));
 	}
 	
