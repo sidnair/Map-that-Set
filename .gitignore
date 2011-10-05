@@ -1,0 +1,6 @@
+*.class
+*~
+*#*#
+isnorkcode/bin
+*.swp
+*.class
