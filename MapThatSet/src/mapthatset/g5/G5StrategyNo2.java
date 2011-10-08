@@ -10,15 +10,25 @@ import java.util.Set;
 import mapthatset.sim.Guesser;
 import mapthatset.sim.GuesserAction;
 
-public class G5GuesserNo2 extends Guesser {
+/**
+ *  TODO - give an overview of this strategy. What are the pros and cons, and
+ *  what needs to be implemented?
+ *  
+ *  Also, change the name..."G5StrategyNo2" is not informative.
+ */
+public class G5StrategyNo2 extends Strategy {
+
 	int intMappingLength;
 	int intLastQueryIndex = 0;
 	ArrayList< Integer > alGuess = new ArrayList< Integer >();
-	String strID = "NotDumbGuesser";
 	int[][] matrix;
 	ArrayList<Integer> pair;
 	int guessNumber;
 	int state = -1;
+	
+	public G5StrategyNo2(boolean debug) {
+		super(debug);
+	}
 	
 	public void startNewMapping( int intMappingLength )
 	{
@@ -133,10 +143,4 @@ public class G5GuesserNo2 extends Guesser {
 		}
 	}
 
-	@Override
-	public String getID() 
-	{
-		// TODO Auto-generated method stub
-		return strID;
-	}
 }
