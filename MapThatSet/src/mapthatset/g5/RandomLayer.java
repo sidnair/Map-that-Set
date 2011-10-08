@@ -17,18 +17,13 @@ public class RandomLayer {
 			int random = r.nextInt(left.size());
 			randomLayer.add(left.get(random));
 			left.remove(random);
-		}		
+		}
 	}
 
 	protected Integer getMapping(int number) {
 		// The mapping has a 1-based index, and the randomLayer ArrayList has a
-		// 0-based index.
+		// 0-based index, so we must correct for that.
 		return randomLayer.get(number - 1);
-	}
-	
-	// Returns a zero-based index.
-	protected int findIndex(int mapTo) {
-		return randomLayer.indexOf(mapTo);
 	}
 	
 	public static void main(String[] args) {
@@ -39,10 +34,6 @@ public class RandomLayer {
 			System.out.print(" ");
 		}
 		System.out.println();
-		for(int i=1;i<=length;i++){
-			System.out.print(rl.findIndex(i));
-			System.out.print(" ");
-		}
 	}
 
 }

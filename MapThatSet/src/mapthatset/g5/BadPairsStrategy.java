@@ -113,7 +113,7 @@ public class BadPairsStrategy extends Strategy {
 	@Override
 	public void setResult(ArrayList<Integer> result) {
 		// If this gets executed, then we are still querying for the initial pairs.
-		//		Sets the possible mappings to be equal to the result arraylist.
+		// Sets the possible mappings to be equal to the result arraylist.
 		if ((lastQueryIndex - 2) < mappingLength) {
 			for (int i = 0; i < result.size(); i++) {
 				TreeSet<Integer> temp = (TreeSet<Integer>)
