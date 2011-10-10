@@ -1,2 +1,3 @@
-//mapthatset.g5.G5Guesser
-mapthatset.g3.TeamMegamindGuesser
+mapthatset.g5.G5Guesser
+//mapthatset.g3.TeamMegamindGuesser
+//mapthatset.g2.AwesomeGuesser
