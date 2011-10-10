@@ -8,14 +8,14 @@ import mapthatset.sim.GuesserAction;
 public class G5Guesser extends Guesser {
 	
 	private final boolean DEBUG = false;
-	private Strategy strategy = new BadPairsStrategy(DEBUG);
-	private RandomLayer randomLayer;	
+	private final boolean RANDOMIZE = !DEBUG && false;
+	private Strategy strategy = new DisjointStrategy(DEBUG);
+	private RandomLayer randomLayer;
 	private int mappingLength;
 
 	public void startNewMapping(int mappingLength) {
 		strategy.startNewMapping(mappingLength);
 		randomLayer = new RandomLayer(mappingLength);
-		
 		this.mappingLength = mappingLength;
 	}
 	
@@ -27,7 +27,7 @@ public class G5Guesser extends Guesser {
 		GuesserAction stratAction = strategy.nextAction();
 		// Don't do any encoding if we're debugging to make debugging a logic
 		// error in a strategy less painful.
-		if (DEBUG) {
+		if (!RANDOMIZE) {
 			return stratAction;
 		}
 		// Determine the type of the GuesserAction and decode or encode as

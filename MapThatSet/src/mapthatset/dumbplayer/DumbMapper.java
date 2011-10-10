@@ -16,6 +16,7 @@ public class DumbMapper extends Mapper
 		{
 			alNewMapping.add( rdmGenerator.nextInt( intMappingLength ) + 1 );
 		}
+		
 		System.out.println( "The mapping is: " + alNewMapping );
 		return alNewMapping;
 	}
