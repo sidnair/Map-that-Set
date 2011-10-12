@@ -11,7 +11,6 @@ import mapthatset.sim.GuesserAction;
 public class ControllerStrategy extends Strategy {
 
 	private Strategy currentStrat;
-	private MappingType mapping;
 	private boolean stratKnown;
 	private int mappingLength;
 	private ArrayList<Integer> currentGuess;
@@ -27,7 +26,6 @@ public class ControllerStrategy extends Strategy {
 	public void startNewMapping(int mappingLength) {
 		this.mappingLength = mappingLength;
 		stratKnown = false;
-		mapping = null;
 		currentStrat = null;
 	}
 
@@ -49,13 +47,14 @@ public class ControllerStrategy extends Strategy {
 		if (stratKnown) {
 			currentStrat.setResult(result);
 		} else {
-			MappingType mapping = determineMappingType(result, currentGuess);
-			switch (mapping) {
+			switch (determineMappingType(result, currentGuess)) {
 			case BINARY:
 				currentStrat = new BinaryStrategy(DEBUG);
 				break;
 			case PERM:
-				currentStrat = new PermStrategy(DEBUG);
+				// TODO - restore to Perm once it's implemented...
+				currentStrat = new DisjointStrategy(DEBUG);
+				// currentStrat = new PermStrategy(DEBUG);
 				break;
 			case OTHER:
 				currentStrat = new DisjointStrategy(DEBUG);

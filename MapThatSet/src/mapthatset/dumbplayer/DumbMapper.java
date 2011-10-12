@@ -14,7 +14,10 @@ public class DumbMapper extends Mapper
 		Random rdmGenerator = new Random();
 		for ( int intIndex = 0; intIndex < intMappingLength; intIndex ++ )
 		{
+			// Random
 			alNewMapping.add( rdmGenerator.nextInt( intMappingLength ) + 1 );
+			// Binary
+			// alNewMapping.add( (rdmGenerator.nextInt( intMappingLength ) + 1) % 2 + 1 );
 		}
 		
 		System.out.println( "The mapping is: " + alNewMapping );
