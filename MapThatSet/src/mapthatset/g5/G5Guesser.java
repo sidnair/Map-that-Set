@@ -7,14 +7,16 @@ import mapthatset.sim.GuesserAction;
 
 public class G5Guesser extends Guesser {
 	
-	private final boolean DEBUG = false;
-	private final boolean RANDOMIZE = !DEBUG && false;
+	private final boolean DEBUG = true;
+	private final boolean RANDOMIZE = !DEBUG;
 	private Strategy strategy = new DisjointStrategy(DEBUG);
+	private Strategy binaryStrategy = new BinaryStrategy(DEBUG);
 	private RandomLayer randomLayer;
 	private int mappingLength;
 
 	public void startNewMapping(int mappingLength) {
 		strategy.startNewMapping(mappingLength);
+		binaryStrategy.startNewMapping(mappingLength);
 		randomLayer = new RandomLayer(mappingLength);
 		this.mappingLength = mappingLength;
 	}
@@ -24,7 +26,8 @@ public class G5Guesser extends Guesser {
 	 */
 	@Override
 	public GuesserAction nextAction() {
-		GuesserAction stratAction = strategy.nextAction();
+		//GuesserAction stratAction = strategy.nextAction();
+		GuesserAction stratAction = binaryStrategy.nextAction();
 		// Don't do any encoding if we're debugging to make debugging a logic
 		// error in a strategy less painful.
 		if (!RANDOMIZE) {
@@ -76,7 +79,8 @@ public class G5Guesser extends Guesser {
 	
 	@Override
 	public void setResult(ArrayList<Integer> result) {
-		strategy.setResult(result);
+//		strategy.setResult(result);
+		binaryStrategy.setResult(result);
 	}
 	
 	@Override
