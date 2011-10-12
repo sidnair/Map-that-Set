@@ -1,2 +1,2 @@
-//mapthatset.g5.G5Mapper
-mapthatset.dumbplayer.DumbMapper
+mapthatset.g5.G5Mapper
+//mapthatset.dumbplayer.DumbMapper
