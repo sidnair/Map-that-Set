@@ -9,7 +9,7 @@ public class G5Guesser extends Guesser {
 	
 	private final boolean DEBUG = false;
 	private final boolean RANDOMIZE = !DEBUG && false;
-	private Strategy strategy = new DisjointStrategy(DEBUG);
+	private Strategy strategy = new ControllerStrategy(DEBUG);
 	private RandomLayer randomLayer;
 	private int mappingLength;
 
