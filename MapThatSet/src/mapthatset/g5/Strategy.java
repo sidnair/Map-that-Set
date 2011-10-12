@@ -5,17 +5,17 @@ import java.util.ArrayList;
 import mapthatset.sim.GuesserAction;
 
 public abstract class Strategy {
-	
+
 	protected final boolean DEBUG;
 	
-	public Strategy(boolean debug) {
+	protected Strategy(boolean debug) {
 		this.DEBUG = debug;
 	}
+	//Changed to protected, otherwise other groups can call these methods.
+	protected abstract void startNewMapping(int mappingLength);
 	
-	public abstract void startNewMapping(int mappingLength);
+	protected abstract GuesserAction nextAction();
 	
-	public abstract GuesserAction nextAction();
-	
-	public abstract void setResult(ArrayList<Integer> result);
+	protected abstract void setResult(ArrayList<Integer> result);
 
 }

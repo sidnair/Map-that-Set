@@ -11,7 +11,7 @@ import mapthatset.g5.RandomLayer;
 
 public class G5Mapper extends Mapper {
 	
-	private int intival = 3;
+	private int intival = 2;
 	//checked with the pair and orthogonal guesser, when n=3, there will be no orthogonal pair.
 
 	@Override
