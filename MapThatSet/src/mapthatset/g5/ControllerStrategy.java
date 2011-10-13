@@ -55,7 +55,7 @@ public class ControllerStrategy extends Strategy {
 				break;
 			case PERM:
 				// TODO - restore to Perm once it's implemented...
-				currentStrat = new DisjointStrategy(DEBUG);
+				currentStrat = new PermStrategy(DEBUG);
 				// currentStrat = new PermStrategy(DEBUG);
 				break;
 			case OTHER:

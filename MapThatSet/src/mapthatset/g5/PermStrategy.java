@@ -1,22 +1,17 @@
 package mapthatset.g5;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.TreeSet;
 import java.util.Vector;
 
-		import mapthatset.sim.Guesser;
 import mapthatset.sim.GuesserAction;
-import mapthatset.sim.MapThatSet;
 
-public class PermStrategy extends Guesser {//Strategy {
+public class PermStrategy extends Strategy {
 	
 	private int mappingSize;
 	private int arraySplitSpacing;
 	private int counter;
 	private Vector<QueriesResponses> previousResults;
-	//private Map<Integer, TreeSet<Integer>> possibleMappings;
 	private ArrayList<Integer> guess;
 	private int[] placeKeeperArray;
 	
@@ -85,22 +80,20 @@ public class PermStrategy extends Guesser {//Strategy {
 		return result;
 	}
 	
-		//public PermStrategy(boolean debug) {
-			//super(debug);
-		//}
+	public PermStrategy(boolean debug) {
+		super(debug);
+	}
 
 	@Override
 	public void startNewMapping(int mappingLength) {
 		mappingSize = mappingLength;
 		previousResults = new Vector<QueriesResponses>();
-		//possibleMappings = new HashMap<Integer, TreeSet<Integer>>();
 		guess = new ArrayList<Integer>();
 		arraySplitSpacing = (int) Math.ceil(mappingLength/2.0);
 		placeKeeperArray = new int[mappingLength];
 		counter = 0;
 		
 		for(int i = 1; i <= mappingLength; ++i){
-			//possibleMappings.put(i, new TreeSet<Integer>());
 			guess.add(0);
 			placeKeeperArray[i-1] = i;
 		}
@@ -111,7 +104,6 @@ public class PermStrategy extends Guesser {//Strategy {
 	public GuesserAction nextAction() {
 		System.out.println("nextGuess!");
 		while(arraySplitSpacing > 0){
-			//System.out.println(arraySplitSpacing);
 			counter = 0;
 			ArrayList<Integer> query = new ArrayList<Integer>();
 			boolean add = true;
@@ -176,11 +168,5 @@ public class PermStrategy extends Guesser {//Strategy {
 		QueriesResponses qr = previousResults.lastElement();
 		qr.setResponse(result);
 	}
-
-		@Override
-		public String getID() {
-			// TODO Auto-generated method stub
-			return "yay";
-		}
 
 }
