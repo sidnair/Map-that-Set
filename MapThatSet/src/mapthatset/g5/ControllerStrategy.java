@@ -49,13 +49,13 @@ public class ControllerStrategy extends Strategy {
 		} else {
 			switch (determineMappingType(result, currentGuess)) {
 			case BINARY:
-				currentStrat = new DisjointStrategy(DEBUG);
+//				currentStrat = new DisjointStrategy(DEBUG);
 				// TODO - restore this once the binary strat works...
-				// currentStrat = new BinaryStrategy(DEBUG);
+				 currentStrat = new BinaryStrategy(DEBUG);
 				break;
 			case PERM:
 				// TODO - restore to Perm once it's implemented...
-				currentStrat = new DisjointStrategy(DEBUG);
+				currentStrat = new PermStrategy(DEBUG);
 				// currentStrat = new PermStrategy(DEBUG);
 				break;
 			case OTHER:

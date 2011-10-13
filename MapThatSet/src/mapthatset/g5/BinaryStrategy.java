@@ -11,6 +11,7 @@ public class BinaryStrategy extends Strategy {
 	private int mappingLength;
 	private ArrayList<Integer> result;
 	private ArrayList<Integer> lastQuery;
+	private int x=0,y=0; //binary mapping only. Todo:accept outlier 
 
 	protected BinaryStrategy(boolean debug) {
 		super(debug);
@@ -19,7 +20,7 @@ public class BinaryStrategy extends Strategy {
 	/* 
 	 * For unqueried elements, set result[i]=0
 	 * For queried but not sure elements, set result[i]=-1
-	 * else, set result[i]=1 or 2
+	 * else, set result[i]=x or y
 	 */
 	@Override
 	protected void startNewMapping(int mappingLength) {
@@ -56,6 +57,7 @@ public class BinaryStrategy extends Strategy {
 			else if(result.lastIndexOf(-1)>0 && result.lastIndexOf(0)>0){
 				query.add(result.lastIndexOf(-1));
 				query.add(result.lastIndexOf(-1)+1);
+				
 			}
 			/* 
 			 * only one element unqueried
@@ -102,6 +104,10 @@ public class BinaryStrategy extends Strategy {
 		else if(lastQuery.size()==2 && result.size()==2){
 			this.result.set(lastQuery.get(0), -1);
 			this.result.set(lastQuery.get(1), -1);
+			if(x==0 && y==0){
+				x=result.get(0);
+				y=result.get(1);
+			}
 		}
 		else if(lastQuery.size()==1){
 			this.result.set(lastQuery.get(0), result.get(0));
@@ -117,7 +123,7 @@ public class BinaryStrategy extends Strategy {
 	private void lookBack() {
 		if(this.result.lastIndexOf(-1)!=-1){
 			int m = result.get(result.lastIndexOf(-1)+1);
-			int n = m==1?2:1;
+			int n = m==x?y:x;
 			int lastIndex = result.indexOf(-1);
 			for(int i = result.lastIndexOf(-1);i>=lastIndex;i=i-2){
 				result.set(i, n);
