@@ -1,6 +1,6 @@
 package mapthatset.g7;
 
-import java.util.Arrays;
+import java.util.Random;
 import java.util.Vector;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -28,6 +28,9 @@ class Combinator implements Iterable <int[]> {
 	/* Size of active domain per variable */
 	private int[] gen_domain_size;
 
+	/* Is last changes propagated ? */
+	private HashSet <Integer> propagation_variables;
+
 	private class Constraint {
 
 		/* Different variables */
@@ -50,8 +53,10 @@ class Combinator implements Iterable <int[]> {
 			/* Copy and check values */
 			values = new HashSet <Integer> ();
 			for (int i = 0 ; i != vals.length ; ++i) {
-				if (vals[i] < min_value || vals[i] > max_value)
+				if (vals[i] < min_value || vals[i] > max_value) {
+					System.out.println(vals[i]);
 					throw new IllegalArgumentException();
+				}
 				values.add(vals[i]);
 			}
 
@@ -61,21 +66,19 @@ class Combinator implements Iterable <int[]> {
 		}
 	}
 
-	/* Typedef set of integers to allow array creation */
-	private static class IntSet extends HashSet <Integer> {
-		private static final long serialVersionUID = 1;
-	};
-
 	/* Typedef array of integers to allow array creation */
 	private static class IntArray extends Vector <Integer> {
-		private static final long serialVersionUID = 2;
-	};
+		private static final long serialVersionUID = 1;
+	}
 
 	/* Constraints for the problem */
 	private Vector <Constraint> constraints;
 
 	/* Constraints for each variable */
 	private IntArray[] attach;
+
+	/* Timeout for run iterator */
+	private long timeout;
 
 	/* Constructor with default minimum and maximum value */
 	public Combinator(int vars)
@@ -108,6 +111,8 @@ class Combinator implements Iterable <int[]> {
 			for (int j = 0 ; j != value_count ; ++j)
 				gen_domain[i][j] = j + min_value;
 		}
+		timeout = 0;
+		propagation_variables = new HashSet <Integer> ();
 	}
 
 	/* Add a new constraint in the combinator */
@@ -124,19 +129,26 @@ class Combinator implements Iterable <int[]> {
 
 			/* Cut the domains of variable to match the new constraint */
 			for (int val_i = 0 ; val_i != gen_domain_size[var_i] ; ++val_i)
-				if (!new_constraint.values.contains(gen_domain[var_i][val_i]))
+				if (!new_constraint.values.contains(gen_domain[var_i][val_i])) {
 					gen_domain[var_i][val_i--] = gen_domain[var_i][--gen_domain_size[var_i]];
+					propagation_variables.add(var_i);
+				}
 		}
+	}
 
-		/* Find out cases where there the same number
-		 * of free variables and unused values
-		 * So each one of the free variables can
-		 * only pick from those values
-		 */
-		boolean changes;
-		do {
-			changes = false;
-			for (Constraint con : constraints) {
+	/* Find out cases where there the same number
+	 * of free variables and unused values
+	 * So each one of the free variables can
+	 * only pick from those values
+	 */
+	private void propagate()
+	{
+		/* Check propagation between variables */
+		while (propagation_variables.size() != 0) {
+			int var = propagation_variables.iterator().next();
+			propagation_variables.remove(var);
+			for (int con_pos : attach[var]) {
+				Constraint con = constraints.get(con_pos);
 
 				/* Get unassigned variables and values */
 				HashSet <Integer> unassigned_variables = new HashSet <Integer> ();
@@ -157,13 +169,16 @@ class Combinator implements Iterable <int[]> {
 				if (unassigned_variables.size() != unused_values.size())
 					continue;
 				for (int var_i : unassigned_variables)
-					for (int val_i = 0 ; val_i != gen_domain_size[var_i] ; ++val_i)
+					for (int val_i = 0 ; val_i != gen_domain_size[var_i] ; ++val_i) {
 						if (!unused_values.contains(gen_domain[var_i][val_i])) {
 							gen_domain[var_i][val_i--] = gen_domain[var_i][--gen_domain_size[var_i]];
-							changes = true;
+							propagation_variables.add(var_i);
 						}
+						if (gen_domain_size[var_i] == 0)
+							throw new RuntimeException();
+					}
 			}
-		} while (changes);
+		}
 	}
 
 	/* Size of one variable's domain
@@ -171,9 +186,10 @@ class Combinator implements Iterable <int[]> {
 	 */
 	public int[] domain(int var_i)
 	{
-		if (var_i <= 0 || var_i > variable_count)
+		propagate();
+		if (var_i <= 0 || var_i-- > variable_count)
 			throw new IllegalArgumentException();
-		return copy(gen_domain[var_i - 1], gen_domain_size[var_i - 1]);
+		return copy(gen_domain[var_i], gen_domain_size[var_i]);
 	}
 
 	/* Returns unique solution else null
@@ -214,6 +230,7 @@ class Combinator implements Iterable <int[]> {
 		}
 
 		/* Initialize domains and copy them */
+		propagate();
 		int value_count = max_value - min_value + 1;
 		constraint_count = constraints.size();
 		domain = new int [variable_count][value_count];
@@ -298,9 +315,8 @@ class Combinator implements Iterable <int[]> {
 						min_order_i = order_i;
 
 				/* Fix the order array and initialize stuff */
-				var_i = order[min_order_i];
-				order[min_order_i] = order[variables_fixed];
-				order[variables_fixed++] = var_i;
+				swap(order, min_order_i, variables_fixed);
+				var_i = order[variables_fixed++];
 				domain_offset[var_i] = -1;
 				cut_values[var_i] = 0;
 			}
@@ -482,56 +498,59 @@ class Combinator implements Iterable <int[]> {
 		};
 	}
 
-	/* The actual values found in each variable
-	 * after enumerating all solutions
+	/* Typedef set of integers to allow array creation */
+	private static class IntSet extends HashSet <Integer> {
+		private static final long serialVersionUID = 2;
+	}
+
+	/* Set timeout for the run function
+	 * Zero or negative means infinity
 	 */
-	public class Values {
-
-		/* Stores the used values */
-		private IntSet [] values;
-
-		/* Private constructor
-		 * You cannot create this class independently
-		 */
-		private Values()
-		{
-			values = new IntSet [variable_count];
-			for (int i = 0 ; i != variable_count ; ++i)
-				values[i] = new IntSet();
-		}
-
-		/* Add a new used value */
-		private void add(int i, int value)
-		{
-			values[i].add(value);
-		}
-
-		/* Ask for the values of a specific variable */
-		public int[] values(int var_i)
-		{
-			if (var_i <= 0 || var_i > variable_count)
-				throw new IllegalArgumentException();
-			IntSet set = values[var_i - 1];
-			int[] result = new int [set.size()];
-			int i = 0;
-			for (Integer num : set)
-				result[i++] = num;
-			Arrays.sort(result);
-			return result;
-		}
-	}
-
-	/* Get all values used after running the iterator */
-	public Values values()
+	public void findAllTimeout(long millis)
 	{
-		Values values = new Values();
-		for (int[] solution : this)
-			for (int i = 0 ; i != variable_count ; ++i)
-				values.add(i, solution[i]);
-		return values;
+		timeout = millis;
 	}
 
-	/* Copy len first elements of array */
+	/* Find all solutions and refine domains
+	 * Returns the number of values cut
+	 * If timeout then return -1
+	 * If problem cannot be solved throw exception
+	 */
+	public int findAll()
+	{
+		propagate();
+		Iterator <int[]> it = iterator();
+		IntSet [] real_domain = new IntSet [variable_count];
+		for (int i = 0 ; i != variable_count ; ++i)
+			real_domain[i] = new IntSet();
+		long start_time = System.currentTimeMillis();
+		int solutions = 0;
+		int cut = 0;
+		for (;;) {
+			if (timeout > 0 && System.currentTimeMillis() - start_time > timeout)
+				return -1;
+			if (!it.hasNext()) {
+				if (solutions == 0)
+					throw new NoSuchElementException();
+				break;
+			}
+			solutions++;
+			int[] combination = it.next();
+			for (int val_i = 0 ; val_i != variable_count ; ++val_i)
+				real_domain[val_i].add(combination[val_i]);
+		}
+		/* Cut domains to contain only values found in solutions */
+		for (int var_i = 0 ; var_i != variable_count ; ++var_i)
+			for (int val_i = 0 ; val_i != gen_domain_size[var_i] ; ++val_i)
+				if (!real_domain[var_i].contains(gen_domain[var_i][val_i])) {
+					gen_domain[var_i][val_i--] = gen_domain[var_i][--gen_domain_size[var_i]];
+					propagation_variables.add(var_i);
+					cut++;
+				}
+		return cut;
+	}
+
+	/* Copy equal to 2nd argument first elements of array */
 	private static int[] copy(int[] arr, int len)
 	{
 		int[] copy = new int [len];
@@ -541,56 +560,123 @@ class Combinator implements Iterable <int[]> {
 	}
 
 	/* Swap elements of array */
-	private void swap(int[] a, int i, int j)
+	private static void swap(int[] a, int i, int j)
 	{
 		int t = a[i];
 		a[i] = a[j];
 		a[j] = t;
 	}
 
-	/* Print array of ints */
-	private static String print(int[] arr)
+	/* Testing main */
+	public static void main(String[] args)
 	{
-		if (arr.length == 0)
+		int size = 32;
+		int[] mapping = randomMapping(size);
+		mapping = distinctMapping(size);
+		System.out.println("Mapping:  " + toString(mapping));
+		HashSet <Integer> query = new HashSet <Integer> ();
+		HashSet <Integer> result = new HashSet <Integer> ();
+		int qsize = (int) Math.ceil(Math.sqrt(size));
+		int dsize, turn = 1;
+		Combinator engine = new Combinator(size);
+		engine.findAllTimeout(100);
+		int reds = 0;
+		int limit = qsize;
+		do {
+			query.clear();
+			result.clear();
+		//	for (int i = 0 ; i != (turn == 1 ? size * 100 : qsize) ; ++i)
+		//		query.add(gen.nextInt(size) + 1);
+			int set_size = 1 << (limit - turn);
+			int var = 1;
+			both:
+			do {
+				for (int i = 0 ; i != set_size ; ++i) {
+					if (var > size)
+						break both;
+					query.add(var++);
+				}
+				var += set_size;
+			} while (var <= size);
+			for (int x : query)
+				result.add(mapping[x - 1]);
+			System.out.println("\nTurn: " + turn);
+			engine.constraint(toArray(query), toArray(result));
+			System.out.println("Query:   " + toString(toArray(query)));
+			System.out.println("Result:  " + toString(toArray(result)));
+			int bsize = 0;
+			for (int v = 1 ; v <= size ; ++v)
+				bsize += engine.domain(v).length;
+			long time = System.currentTimeMillis();
+			System.out.print("Searching...");
+			boolean timeout = true;
+			if (engine.findAll() < 0)
+				System.out.println("   Timeout.  :(");
+			else {
+				timeout = false;
+				time = System.currentTimeMillis() - time;
+				System.out.println("   Done!  :D    (" + time + " ms)");
+			}
+			dsize = 0;
+			System.out.println("Domains:");
+			for (int v = 1 ; v <= size ; ++v) {
+				dsize += engine.domain(v).length;
+				System.out.println("Domain " + v + ": {" + toString(engine.domain(v)) + "}");
+			}
+			if (bsize == dsize)
+				System.out.print("No reduction...");
+			else {
+				System.out.print("Reduction!");
+				reds++;
+			}
+			if (timeout)
+				System.out.println("   (timeout)");
+			else
+				System.out.println("   (no timeout)");
+			turn++;
+		} while (dsize != size);
+		System.out.println("\nMapping:  " + toString(mapping));
+		System.out.println("\nReductions:  " + reds);
+	}
+
+	private static int[] randomMapping(int size)
+	{
+		Random gen = new Random();
+		int[] mapping = new int [size];
+		for (int i = 0 ; i != size ; ++i)
+			mapping[i] = gen.nextInt(size) + 1;
+		return mapping;
+	}
+
+	private static int[] distinctMapping(int size)
+	{
+		Random gen = new Random();
+		int[] mapping = new int [size];
+		for (int i = 0 ; i != size ; ++i)
+			mapping[i] = i + 1;
+		for (int i = 0 ; i != size ; ++i)
+			swap(mapping, i, gen.nextInt(size - i) + i);
+		return mapping;
+	}
+
+	private static String toString(int[] a) {
+		if (a.length == 0)
 			return "";
 		StringBuffer buf = new StringBuffer();
-		buf.append(arr[0]);
-		for (int i = 1 ; i != arr.length ; ++i) {
-			buf.append(",");
-			buf.append(String.valueOf(arr[i]));
+		buf.append(a[0]);
+		for (int i = 1 ; i != a.length ; ++i) {
+			buf.append(',');
+			buf.append(a[i]);
 		}
 		return buf.toString();
 	}
 
-	/* Testing main */
-	public static void main(String[] args)
+	private static int[] toArray(HashSet <Integer> s)
 	{
-		int size = 4;
-		int count = 0;
-		Combinator engine = new Combinator(size);
-		System.out.println("Domains are:");
-		for (int v = 1 ; v <= size ; ++v)
-			System.out.println("Domain " + v + ": {" + print(engine.domain(v)) + "}");
-		int[] q1 = {1, 2, 3, 4};
-		int[] a1 = {1, 2, 3};
-		int[] q2 = {3, 4};
-		int[] a2 = {3};
-		engine.constraint(q1, a1);
-		engine.constraint(q2, a2);
-		System.out.println("Constraints added");
-		System.out.println("Domains are:");
-		for (int v = 1 ; v <= size ; ++v)
-			System.out.println("Domain " + v + ": {" + print(engine.domain(v)) + "}");
-		Values engine_values = engine.values();
-		System.out.println("Values are:");
-		for (int v = 1 ; v <= size ; ++v)
-			System.out.println("Values of " + v + ": {" + print(engine_values.values(v)) + "}");
-		if (engine.unique() != null)
-			System.out.println("Solution is unique!");
-		else
-			System.out.println("Solution is not unique.");
-		System.out.println("Solutions:");
-		for (int[] a : engine)
-			System.out.println(++count + ":\t" + print(a));
+		int[] r = new int [s.size()];
+		int i = 0;
+		for (int n : s)
+			r[i++] = n;
+		return r;
 	}
 }

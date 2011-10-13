@@ -1,18 +1,14 @@
 package mapthatset.g7;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.NoSuchElementException;
 import java.util.Random;
 import java.util.Vector;
 
 import mapthatset.sim.Guesser;
 import mapthatset.sim.GuesserAction;
 
-public class G7Guesser extends Guesser {
+public class TreeGuesser extends Guesser {
 
 	public String getID()
 	{
@@ -34,10 +30,6 @@ public class G7Guesser extends Guesser {
 		value_count = 0;
 		round = 0;
 		guess = false;
-		binary = false;
-		distinct = false;
-		tree = false;
-		cross = false;
 		random = new Random();
 		engine = new Combinator(len);
 		history = new Vector <Pair <ArrayList <Integer>, ArrayList <Integer>>> ();
@@ -60,14 +52,8 @@ public class G7Guesser extends Guesser {
 		}
 		if (value_count == 0)
 			query = firstQuery();
-		else if (binary)
-			query = binaryQuery();
-		else if (distinct)
-			query = distinctQuery();
-		else if (tree)
+		else 
 			query = treeQuery();
-		else if (cross)
-			query = crossQuery();
 		guess = false;
 		return new GuesserAction("q", query);
 	}
@@ -77,29 +63,12 @@ public class G7Guesser extends Guesser {
 		if (guess) return;
 		history.add(new Pair <ArrayList <Integer>, ArrayList <Integer>> (query, result));
 		engine.constraint(toArray(query), toArray(result));
-		if (round == 1) {
+		if (round == 1)
 			value_count = result.size();
-			if (value_count == 2)
-				binary = true;
-			else if (value_count == variable_count)
-				distinct = true;
-		//	else
-		//		tree = true;
-			else
-				cross = true;
-			return;
-		}
-		if (binary)
-			binaryResult(result);
-		else if (distinct)
-			distinctResult(result);
-		else if (tree)
+		else
 			treeResult(result);
-		else if (cross)
-			crossResult(result);
 	}
 
-	/* Ask for all variables */
 	private ArrayList <Integer> firstQuery()
 	{
 		ArrayList <Integer> list = new ArrayList <Integer> ();
@@ -107,74 +76,6 @@ public class G7Guesser extends Guesser {
 			list.add(i);
 		return list;
 	}
-
-	/* Optimal strategy for binary mapper */
-	private boolean binary;
-
-	private HashSet <Integer> active_variables;
-
-	private ArrayList <Integer> binaryQuery()
-	{
-		if (round == 2) {
-			active_variables = new HashSet <Integer> ();
-			for (int i = 1 ; i <= variable_count ; ++i)
-				active_variables.add(i);
-		}
-		ArrayList <Integer> list = new ArrayList <Integer> ();
-		for (int i = 0 ; i != 2 && active_variables.size() != 0 ; ++i) {	
-			int x = active_variables.iterator().next();
-			active_variables.remove(x);
-			list.add(x);
-		}
-		return list;
-	}
-
-	private void binaryResult(ArrayList <Integer> result)
-	{
-		if (result.size() == 2)
-			active_variables.add(query.get(0));
-		if (active_variables.size() == 0)
-			engine.findAll();
-	}
-
-	/* Optimal strategy for distinct mapper */
-	private boolean distinct;
-
-	private ArrayList <Integer> distinctQuery()
-	{
-		ArrayList <Integer> list = new ArrayList <Integer> ();
-		int limit = ceilLog(variable_count);
-		int set_size = 1 << (limit - round + 1);
-		int var = 1;
-		do {
-			for (int i = 0 ; i != set_size ; ++i) {
-				if (var > variable_count)
-					return list;
-				list.add(var++);
-			}
-			var += set_size;
-		} while (var <= variable_count);
-		return list;
-	}
-
-	private void distinctResult(ArrayList <Integer> result)
-	{
-		ArrayList <Integer> rest_vars = new ArrayList <Integer> ();
-		ArrayList <Integer> rest_vals = new ArrayList <Integer> ();
-		for (int i = 1 ; i <= variable_count ; ++i) {
-			if (!query.contains(i))
-				rest_vars.add(i);
-			if (!result.contains(i))
-				rest_vals.add(i);
-		}
-		engine.constraint(toArray(rest_vars), toArray(rest_vals));
-	}
-
-	/* Tree strategy
-	 * Optimal for distinct mappings
-	 * Does not seem to work for other cases
-	 */
-	private boolean tree;
 
 	private QueryNode root;
 
@@ -260,65 +161,7 @@ public class G7Guesser extends Guesser {
 			q.set(values, engine);
 		}
 		engine.findAllTimeout(500);
-		try {
-			engine.findAll();
-		} catch (NoSuchElementException e) {}
-	}
-
-	private boolean cross;
-
-	private int[] uses;
-
-	private HashSet <Integer> combined;
-
-	private class UseCompare implements Comparator <Integer> {
-
-		public int compare(Integer var_i, Integer var_j)
-		{
-			return uses[var_i - 1] - uses[var_j - 1];
-		}
-	}
-
-	private ArrayList <Integer> crossQuery()
-	{
-		ArrayList <Integer> list = new ArrayList <Integer> ();
-		if (round == 2) {
-			uses = new int [variable_count];
-			for (int i = 0 ; i != variable_count ; ++i)
-				uses[i] = 0;
-			combined = new HashSet <Integer> ();
-		}
-		int limit = (int) Math.ceil(Math.sqrt(variable_count));
-		int active = 0;
-		Integer[] variables = new Integer [variable_count];
-		for (int var = 1 ; var <= variable_count ; ++var)
-			if (engine.domain(var).length != 1)
-				variables[active++] = var;
-		Arrays.sort(variables, 0, active, new UseCompare());
-		next_var:
-		for (int i = 0 ; i != active && list.size() != limit ; ++i) {
-			int var_i = variables[i];
-			for (int var_j : list)
-				if (combined.contains(var_i * variable_count + var_j))
-					continue next_var;
-			list.add(var_i);
-			uses[var_i - 1]++;
-		}
-		return list;
-	}
-
-	private void crossResult(ArrayList <Integer> answer)
-	{
-		for (int var_i : query)
-			for (int var_j : query) {
-				if (var_i >= var_j) continue;
-				combined.add(var_i * variable_count + var_j);
-				combined.add(var_j * variable_count + var_i);
-			}
-		engine.findAllTimeout(500);
-		try {
-			engine.findAll();
-		} catch (NoSuchElementException e) {}
+		engine.findAll();
 	}
 
 	private static boolean independent(Collection <?> c1, Collection <?> c2)
@@ -327,14 +170,6 @@ public class G7Guesser extends Guesser {
 			if (c2.contains(o))
 				return false;
 		return true;
-	}
-
-	private static int ceilLog(int n)
-	{
-		int i = 0;
-		while ((1 << i) < n)
-			i++;
-		return i;
 	}
 
 	private <E> void shuffle(Vector <E> arr)
