@@ -11,7 +11,7 @@ public class BinaryStrategy extends Strategy {
 	private int mappingLength;
 	private ArrayList<Integer> result;
 	private ArrayList<Integer> lastQuery;
-	private int x=0,y=0; //binary mapping only. Todo:accept outlier 
+	private int x=0,y=0; //binary mapping only. TODO:accept outlier 
 
 	protected BinaryStrategy(boolean debug) {
 		super(debug);
