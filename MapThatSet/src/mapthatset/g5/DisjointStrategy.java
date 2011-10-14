@@ -18,9 +18,8 @@ public class DisjointStrategy extends Strategy {
 	
 	private int initialGroupSize;
 	private int mappingLength;
-	private Map<Integer, Set<Integer>> possibleMappings;
 	private ArrayList<Integer> currentQuery;
-	private Map<ArrayList<Integer>, ArrayList<Integer>> pastQueries;
+	private MappingTracker mappingTracker;
 	private enum State {
 		INITIAL_GUESSES,
 		DISJOINT_STAGE;
@@ -44,9 +43,7 @@ public class DisjointStrategy extends Strategy {
 	@Override
 	public void startNewMapping(int mappingLength) {
 		this.mappingLength = mappingLength;
-		possibleMappings = new HashMap<Integer, Set<Integer>>();
-		initPossibleMappings();
-		pastQueries = new HashMap<ArrayList<Integer>, ArrayList<Integer>>();
+		mappingTracker = new MappingTracker(mappingLength);
 		currentState = State.INITIAL_GUESSES;
 		currentState.setLastStart(0);
 		initialGroupSize = determineInitialGroupSize();
@@ -95,8 +92,8 @@ public class DisjointStrategy extends Strategy {
 			}
 			return new GuesserAction("q", currentQuery);
 		} else if (currentState == State.DISJOINT_STAGE) {
-			if (isMappingKnown()) {
-				return new GuesserAction("g", getCorrectMapping());
+			if (mappingTracker.isMappingKnown()) {
+				return new GuesserAction("g", mappingTracker.getCorrectMapping());
 			} else {
 				return new GuesserAction("q", getMaximalMappedToSet());
 			}
@@ -104,14 +101,6 @@ public class DisjointStrategy extends Strategy {
 			System.err.println("Unexpected state!");
 			return null;
 		}
-	}
-	
-	private ArrayList<Integer> getCorrectMapping() {
-		ArrayList<Integer> mapping = new ArrayList<Integer>();
-		for (int i = 1; i <= mappingLength; i++) {
-			mapping.add((Integer) possibleMappings.get(i).toArray()[0]); 
-		}
-		return mapping;
 	}
 
 	/*
@@ -121,6 +110,8 @@ public class DisjointStrategy extends Strategy {
 	 */
 	private ArrayList<Integer> getMaximalMappedToSet() {
 		Set<Integer> possiblyMappedToSet = new HashSet<Integer>();
+		Map<Integer, Set<Integer>> possibleMappings =
+				mappingTracker.getPossibleMappings();
 		// TODO - could get infinite loop? Shouldn't if intersection algorithm
 		// works correctly
 		for (int i = 1; i <= mappingLength; i++) {
@@ -137,15 +128,6 @@ public class DisjointStrategy extends Strategy {
 		return currentQuery;
 	}
 	
-	private boolean isMappingKnown() {
-		for (int i = 1; i <= mappingLength; i++) {
-			if (possibleMappings.get(i).size() > 1) {
-				return false;
-			}
-		}
-		return true;
-	}
-	
 	private void updateCurrentState() {
 		if (currentState != State.INITIAL_GUESSES) {
 			return;
@@ -159,118 +141,13 @@ public class DisjointStrategy extends Strategy {
 	}
 
 	@Override
-	public void setResult(ArrayList<Integer> result) {
-		/*
-		if (currentState == State.INITIAL_GUESSES) {
-			// If we're doing initial guesses, we don't need to worry about 
-			// overlap; just add the possible mappings to the query.
-			for (int i : currentQuery) {
-				Set<Integer> possibleValues = new HashSet<Integer>();
-				for (int r : result) {
-					possibleValues.add(r);
-				}
-				possibleMappings.put(i, possibleValues);
-			}
-		} else {
-		*/
+	protected void setResult(ArrayList<Integer> result) {
 		if (DEBUG) {
 			System.out.println(currentQuery + " --> " + result);
 		}
-			reducePossibilities(currentQuery, result);
-			for (ArrayList<Integer> q : pastQueries.keySet()) {
-				reducePossibilities(q, pastQueries.get(q));
-			}
-		//}
-		pastQueries.put(currentQuery, result);
+		mappingTracker.updateTracker(result, currentQuery);
 		updateCurrentState();
 	}
-	
-	private void reducePossibilities(ArrayList<Integer> query,
-			ArrayList<Integer> result) {
-		// Maps one of the return values to each of the possible numbers that 
-		// map to it.
-		Map<Integer, Set<Integer>> coverage =
-				new HashMap<Integer, Set<Integer>>(); 
-		// Initialize coverage.
-		for (int possibility : result) {
-			Set<Integer> possibleMappingValues = new HashSet<Integer>();
-			for (int i : query) {
-				if (possibleMappings.get(i).contains(possibility)) {
-					possibleMappingValues.add(i);
-				}
-			}
-			coverage.put(possibility, possibleMappingValues);
-		}
-		
-		/*
-		 * Next, if any of the integers in the result (the integers which
-		 * are mapped to) have only one integer, x, that might map to it in 
-		 * the guess, we know that x must be used for this mapping. Thus,
-		 * we can remove x from all other possible mappings. We repeat this
-		 * n times to make sure that the process of reducing possible
-		 * mappings is complete. Then, we update the possible results for
-		 * each of the integer. 
-		 */
-		// Must iterate for |result| times for this logic to be accurate.
-		for (int i = 0; i < result.size(); i++) {
-			for (int q : query) {
-				updatePossibleValues(q, coverage);
-				for (int mappedTo : coverage.keySet()) {
-					// The integer in the query can only be mapped to this int.
-					if (possibleMappings.get(q).size() == 1 && 
-							(Integer) possibleMappings.get(q).toArray()[0] == mappedTo) {
-						removeMappings(coverage, mappedTo, q);
-					}
-				}				
-			}
-			for (int mappedTo : coverage.keySet()) {
-				Set<Integer> possibleMappers = coverage.get(mappedTo);
-				if (possibleMappers.size() == 1) {
-					removeMappings(coverage, mappedTo,
-							(Integer) possibleMappers.toArray()[0]);
-				}
-			}
-		}
-		for (int i : query) {
-			updatePossibleValues(i, coverage);
-		}
-		
-		if (DEBUG) {
-			System.out.println(possibleMappings);
-		}
-	}
-	
-	private void updatePossibleValues(int i, Map<Integer, Set<Integer>> coverage) {
-		Set<Integer> possibleValues = new HashSet<Integer>();
-		for (int r : coverage.keySet()) {
-			if (coverage.get(r).contains(i)) {
-				possibleValues.add(r);
-			}
-		}
-		possibleMappings.put(i, possibleValues);
-	}
 
-	private void removeMappings(Map<Integer, Set<Integer>> coverage,
-			int mappedTo, int mapped) {
-		for (int i : coverage.keySet()) {
-			if (i != mappedTo) {
-				coverage.get(i).remove(mapped);
-			}
-		}
-	}
-	
-	/**
-	 * Modifies possibleMappings so that every integer maps to every other
-	 * integer.
-	 */
-	private void initPossibleMappings() {
-		for (int i = 1; i <= mappingLength; i++) {
-			Set<Integer> possibleValues = new HashSet<Integer>();
-			for (int j = 1; j <= mappingLength; j++) {
-				possibleValues.add(j);
-			}
-			possibleMappings.put(i, possibleValues);
-		}
-	}
 
 }

@@ -60,18 +60,13 @@ public class G7Guesser extends Guesser {
 		}
 		if (value_count == 0) {
 			query = firstQuery();
-			System.out.println("first");
 		} else if (binary) {
 			query = binaryQuery();
-			System.out.println("binary");
 		} else if (distinct) {
 			query = distinctQuery();
-			System.out.println("distinct");
 		} else if (tree) {
-			System.out.println("tree");
 			query = treeQuery();
 		} else if (cross) {
-			System.out.println("cross");
 			query = crossQuery();
 		}
 		guess = false;
