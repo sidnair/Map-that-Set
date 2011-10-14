@@ -1,3 +1,5 @@
 mapthatset.g5.G5Guesser
+//mapthatset.g7.G7Guesser
+//mapthatset.g7.CrossGuesser
 //mapthatset.g3.TeamMegamindGuesser
 //mapthatset.g2.AwesomeGuesser

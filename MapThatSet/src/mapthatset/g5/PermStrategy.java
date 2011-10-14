@@ -15,7 +15,6 @@ public class PermStrategy extends Strategy {
 	private ArrayList<Integer> guess;
 	private int[] placeKeeperArray;
 	
-	
 	private class QueriesResponses {
 		private TreeSet<Integer> query = new TreeSet<Integer>();
 		private TreeSet<Integer> response = new TreeSet<Integer>();

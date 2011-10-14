@@ -6,6 +6,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
+
 import mapthatset.sim.GuesserAction;
 
 /*
@@ -43,6 +45,7 @@ public class DisjointStrategy extends Strategy {
 	public void startNewMapping(int mappingLength) {
 		this.mappingLength = mappingLength;
 		possibleMappings = new HashMap<Integer, Set<Integer>>();
+		initPossibleMappings();
 		pastQueries = new HashMap<ArrayList<Integer>, ArrayList<Integer>>();
 		currentState = State.INITIAL_GUESSES;
 		currentState.setLastStart(0);
@@ -157,6 +160,7 @@ public class DisjointStrategy extends Strategy {
 
 	@Override
 	public void setResult(ArrayList<Integer> result) {
+		/*
 		if (currentState == State.INITIAL_GUESSES) {
 			// If we're doing initial guesses, we don't need to worry about 
 			// overlap; just add the possible mappings to the query.
@@ -168,11 +172,15 @@ public class DisjointStrategy extends Strategy {
 				possibleMappings.put(i, possibleValues);
 			}
 		} else {
+		*/
+		if (DEBUG) {
+			System.out.println(currentQuery + " --> " + result);
+		}
 			reducePossibilities(currentQuery, result);
 			for (ArrayList<Integer> q : pastQueries.keySet()) {
 				reducePossibilities(q, pastQueries.get(q));
 			}
-		}
+		//}
 		pastQueries.put(currentQuery, result);
 		updateCurrentState();
 	}
@@ -194,12 +202,6 @@ public class DisjointStrategy extends Strategy {
 			coverage.put(possibility, possibleMappingValues);
 		}
 		
-		if (DEBUG) {
-			System.out.println(query);
-			System.out.println(result);
-			System.out.println(coverage);
-		}
-		
 		/*
 		 * Next, if any of the integers in the result (the integers which
 		 * are mapped to) have only one integer, x, that might map to it in 
@@ -211,6 +213,16 @@ public class DisjointStrategy extends Strategy {
 		 */
 		// Must iterate for |result| times for this logic to be accurate.
 		for (int i = 0; i < result.size(); i++) {
+			for (int q : query) {
+				updatePossibleValues(q, coverage);
+				for (int mappedTo : coverage.keySet()) {
+					// The integer in the query can only be mapped to this int.
+					if (possibleMappings.get(q).size() == 1 && 
+							(Integer) possibleMappings.get(q).toArray()[0] == mappedTo) {
+						removeMappings(coverage, mappedTo, q);
+					}
+				}				
+			}
 			for (int mappedTo : coverage.keySet()) {
 				Set<Integer> possibleMappers = coverage.get(mappedTo);
 				if (possibleMappers.size() == 1) {
@@ -220,18 +232,22 @@ public class DisjointStrategy extends Strategy {
 			}
 		}
 		for (int i : query) {
-			Set<Integer> possibleValues = new HashSet<Integer>();
-			for (int r : coverage.keySet()) {
-				if (coverage.get(r).contains(i)) {
-					possibleValues.add(r);
-				}
-			}
-			possibleMappings.put(i, possibleValues);
+			updatePossibleValues(i, coverage);
 		}
 		
 		if (DEBUG) {
 			System.out.println(possibleMappings);
 		}
+	}
+	
+	private void updatePossibleValues(int i, Map<Integer, Set<Integer>> coverage) {
+		Set<Integer> possibleValues = new HashSet<Integer>();
+		for (int r : coverage.keySet()) {
+			if (coverage.get(r).contains(i)) {
+				possibleValues.add(r);
+			}
+		}
+		possibleMappings.put(i, possibleValues);
 	}
 
 	private void removeMappings(Map<Integer, Set<Integer>> coverage,
@@ -245,11 +261,9 @@ public class DisjointStrategy extends Strategy {
 	
 	/**
 	 * Modifies possibleMappings so that every integer maps to every other
-	 * integer. This isn't really useful when we have a two-tiered strategy.
+	 * integer.
 	 */
-	@Deprecated
 	private void initPossibleMappings() {
-		possibleMappings = new HashMap<Integer, Set<Integer>>();
 		for (int i = 1; i <= mappingLength; i++) {
 			Set<Integer> possibleValues = new HashSet<Integer>();
 			for (int j = 1; j <= mappingLength; j++) {
@@ -258,6 +272,5 @@ public class DisjointStrategy extends Strategy {
 			possibleMappings.put(i, possibleValues);
 		}
 	}
-
 
 }
