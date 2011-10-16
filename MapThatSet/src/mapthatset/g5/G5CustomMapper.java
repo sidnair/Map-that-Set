@@ -17,7 +17,7 @@ public class G5CustomMapper extends Mapper
 	private final Mapping mappingStrat = Mapping.RANDOM;
 	
 	private enum Mapping {
-		RANDOM, PERM, BINARY;
+		RANDOM, PERM, BINARY, TRIPLE, HALF;
 	}
 	
 	private ArrayList< Integer > getNewMapping() {
@@ -40,6 +40,12 @@ public class G5CustomMapper extends Mapper
 					break;
 				case BINARY:
 					alNewMapping.add( (rdmGenerator.nextInt( intMappingLength ) + 1) % 2 + 1 );
+					break;
+				case TRIPLE:
+					alNewMapping.add( (rdmGenerator.nextInt( intMappingLength ) + 1) % 3 + 1 );
+					break;
+				case HALF:
+					alNewMapping.add( (rdmGenerator.nextInt( intMappingLength ) + 1) % (intMappingLength / 2) + 1 );
 					break;
 			}
 		}

@@ -55,8 +55,8 @@ public class ControllerStrategy extends Strategy {
 				currentStrat = new PermStrategy(DEBUG);
 				break;
 			case OTHER:
-//				currentStrat = new CrossStrategy(DEBUG);
-				currentStrat = new DisjointStrategy(DEBUG);
+				currentStrat = new CrossStrategy(DEBUG);
+//				currentStrat = new DisjointStrategy(DEBUG);
 				break;
 			}
 			currentStrat.startNewMapping(mappingLength);

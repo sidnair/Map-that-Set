@@ -112,8 +112,9 @@ public class DisjointStrategy extends Strategy {
 		Set<Integer> possiblyMappedToSet = new HashSet<Integer>();
 		Map<Integer, Set<Integer>> possibleMappings =
 				mappingTracker.getPossibleMappings();
-		// TODO - could get infinite loop? Shouldn't if intersection algorithm
-		// works correctly
+		
+		
+		
 		for (int i = 1; i <= mappingLength; i++) {
 			if (possibleMappings.get(i).size() > 1) {
 				Set<Integer> possiblyMappedToOverlap = new HashSet<Integer>();

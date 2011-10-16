@@ -47,9 +47,6 @@ public class CrossStrategy extends Strategy {
 				return guessCount[a - 1] - guessCount[b - 1];
 			}
 		});
-//		System.out.println("\n----------------");
-//		System.out.println("\n\t" + legalVars);
-//		System.out.println("\t" + guessedPairs);
 		for (int i = 0; i < legalVars.size() && currentQuery.size() < limit; i++) {
 			int firstInt = legalVars.get(i);
 			if (!isPairUsed(firstInt, currentQuery)) {
