@@ -116,9 +116,9 @@ public class MappingTracker {
 		possibleMappings = new HashMap<Integer, Set<Integer>>();
 		for (int i = 1; i <= mappingLength; i++) {
 			Set<Integer> possibleValues = new HashSet<Integer>();
-//			for (int j = 1; j <= mappingLength; j++) {
-//				possibleValues.add(j);
-//			}
+			for (int j = 1; j <= mappingLength; j++) {
+				possibleValues.add(j);
+			}
 			possibleMappings.put(i, possibleValues);
 		}
 	}
@@ -133,7 +133,9 @@ public class MappingTracker {
 	
 	public boolean isMappingKnown() {
 		for (int i = 1; i <= mappingLength; i++) {
-			if (!isKnown(i)) {
+			int possibilities = possibleMappings.get(i).size();
+			// 0 before first reduction
+			if (possibilities > 1 || possibilities == 0) {
 				return false;
 			}
 		}

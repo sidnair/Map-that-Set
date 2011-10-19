@@ -16,6 +16,7 @@ public class CrossStrategy extends Strategy implements SubProblemMaster {
 	private HashSet<String> guessedPairs;
 	private Set<Integer> domain;
 	int[] guessCount;
+	private final static int FULL_MAPPING_THRESHOLD = 150;
 
 	protected CrossStrategy(boolean debug) {
 		super(debug);
@@ -35,7 +36,9 @@ public class CrossStrategy extends Strategy implements SubProblemMaster {
 	protected void startNewMapping(int mappingLength,
 			ArrayList<Integer> query, ArrayList<Integer> result) {
 		startNewMapping(mappingLength);
-		mappingTracker.updateTracker(result, query);
+		if (mappingLength < FULL_MAPPING_THRESHOLD) {
+			mappingTracker.updateTracker(result, query);
+		}
 	}
 
 	@Override

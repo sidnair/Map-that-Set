@@ -23,6 +23,8 @@ public class ControllerStrategy extends Strategy {
 	private enum MappingType {
 		BINARY, PERM, OTHER
 	}
+	private final static int CROSS_THRESHOLD = 15000;
+	private int unchecked;
 	
 	public ControllerStrategy(boolean debug) {
 		super(debug);
@@ -31,6 +33,7 @@ public class ControllerStrategy extends Strategy {
 	@Override
 	public void startNewMapping(int mappingLength) {
 		this.mappingLength = mappingLength;
+		unchecked = mappingLength;
 		stratKnown = false;
 		currentStrat = null;
 		subproblems = new ArrayList<SubProblem>();
@@ -70,23 +73,29 @@ public class ControllerStrategy extends Strategy {
 		} else {
 			switch (determineMappingType(result, currentGuess)) {
 			case BINARY:
-				 currentStrat = new BinaryStrategy(DEBUG);
+				currentStrat = new BinaryStrategy(DEBUG);
 				break;
 			case PERM:
 				currentStrat = new PermStrategy(DEBUG);
 				break;
 			case OTHER:
-				currentStrat = new CrossStrategy(DEBUG);
+				if (mappingLength < CROSS_THRESHOLD) {
+					currentStrat = new CrossStrategy(DEBUG);
+				} else {
+					currentStrat = new DisjointStrategy(DEBUG);
+				}
 				// Currently never use disjoint strategy.
-				// currentStrat = new DisjointStrategy(DEBUG);
+//				 currentStrat = new DisjointStrategy(DEBUG);
 				break;
 			default:
 				System.err.println("No strategy selected...");
 				System.exit(1);
 			}
-			currentStrat.startNewMapping(mappingLength, currentGuess, 
-					result);
-			stratKnown = true;
+			if (currentStrat != null) {
+				currentStrat.startNewMapping(mappingLength, currentGuess, 
+						result);
+				stratKnown = true;
+			}
 		}
 
 	}
@@ -157,10 +166,10 @@ public class ControllerStrategy extends Strategy {
 
 	private MappingType determineMappingType(ArrayList<Integer> result,
 			ArrayList<Integer> guess) {
-		if (result.size() == mappingLength) {
-			return MappingType.PERM;
+		if (result.size() == mappingLength) {			
+				return MappingType.PERM;
 		}
-		if (result.size() == 2 ) {
+		if (result.size() == 2) {
 			return MappingType.BINARY;
 		}
 		return MappingType.OTHER;

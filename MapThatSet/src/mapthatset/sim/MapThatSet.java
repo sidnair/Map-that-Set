@@ -18,7 +18,7 @@ public class MapThatSet
 	static int intWrongOverMax = 1;
 	static int intLinesToScrollAfterNewMapping = 100;
 	static int intMappingLength = 0;
-	static int intRoundToPlay = 3;
+	static int intRoundToPlay = 1;
 	
 	static Guesser gsrGuesser;
 	static Mapper mppMapper;
@@ -96,6 +96,7 @@ public class MapThatSet
 							}
 						}
 					}
+
 					gsrCurrent.startNewMapping( intMappingLength );
 					
 					mpnCurrent = new Mapping( alMapping );
@@ -137,7 +138,11 @@ public class MapThatSet
 						else if ( strActionType.equals( "q" ) )
 						{
 							ArrayList< Integer > alQueryResult = mpnCurrent.query( alActionContent );
-							gsrCurrent.setResult( alQueryResult );					
+							System.out.println("\n***\n");
+							long start = System.currentTimeMillis();
+							gsrCurrent.setResult( alQueryResult );
+							System.out.println(System.currentTimeMillis() - start);
+							System.exit(1);
 							System.out.print( alActionContent + " --> " + alQueryResult + "\t" );
 						}
 					}
