@@ -46,12 +46,15 @@ public class ControllerStrategy extends Strategy {
 	public void setResult(ArrayList<Integer> result) {
 		if (stratKnown) {
 			currentStrat.setResult(result);
-		} else {
+		} 
+		
+		else {
 			switch (determineMappingType(result, currentGuess)) {
 			case BINARY:
 				 currentStrat = new BinaryStrategy(DEBUG);
 				break;
 			case PERM:
+				//currentStrat = new CrossStrategy(DEBUG);
 				currentStrat = new PermStrategy(DEBUG);
 				break;
 			case OTHER:
@@ -69,7 +72,7 @@ public class ControllerStrategy extends Strategy {
 		if (result.size() == mappingLength) {
 			return MappingType.PERM;
 		}
-		if (result.size() == 2) {
+		if (result.size() == 2 ) {
 			return MappingType.BINARY;
 		}
 		return MappingType.OTHER;
