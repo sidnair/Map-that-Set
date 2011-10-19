@@ -105,7 +105,17 @@ public class MapThatSet
 					int intRoundScore = 0;			// the score for exceeding maximum steps. this is changed only if a guess is made.
 					for ( int intScore = 0; intScore < intMaxQuery; intScore ++ )
 					{
+						
+						long start = System.currentTimeMillis();
+						long total;
+						
 						gsaGA = gsrCurrent.nextAction();
+						total = System.currentTimeMillis() - start;
+						System.out.println("\nnextAction - " + total + "\n");
+						if (total > 1000) {
+//							System.exit(1);
+						}
+						
 						strActionType = gsaGA.getType();
 						alActionContent = gsaGA.getContent();
 						
@@ -136,9 +146,13 @@ public class MapThatSet
 						{
 							ArrayList< Integer > alQueryResult = mpnCurrent.query( alActionContent );
 //							System.out.println("\n***\n");
-//							long start = System.currentTimeMillis();
+							start = System.currentTimeMillis();
 							gsrCurrent.setResult( alQueryResult );
-//							System.out.println("\n" + (System.currentTimeMillis() - start) + "\n");
+							total = System.currentTimeMillis() - start;
+							System.out.println("\nsetResult" + (total) + "\n");
+							if (total > 1000) {
+//								System.exit(1);
+							}
 							System.out.println( alActionContent + " --> " + alQueryResult + "\t" );
 						}
 					}
