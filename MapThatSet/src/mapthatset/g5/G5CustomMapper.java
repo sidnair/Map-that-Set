@@ -14,10 +14,10 @@ public class G5CustomMapper extends Mapper
 	String strID = "G5CustomMapper";
 	
 	// CHANGE THIS TO CHANGE MAPPING STRAT
-	private final Mapping mappingStrat = Mapping.RANDOM;
+	private final Mapping mappingStrat = Mapping.MIX;
 	
 	private enum Mapping {
-		RANDOM, PERM, BINARY, TRIPLE, HALF;
+		RANDOM, PERM, BINARY, TRIPLE, HALF,MIX;
 	}
 	
 	private ArrayList< Integer > getNewMapping() {
@@ -39,13 +39,24 @@ public class G5CustomMapper extends Mapper
 					alNewMapping.add(i);
 					break;
 				case BINARY:
-					alNewMapping.add( (rdmGenerator.nextInt( intMappingLength ) + 1) % 2 + 1 );
+					alNewMapping.add( rdmGenerator.nextInt( 2 ) * intMappingLength/2  + 1 );
 					break;
 				case TRIPLE:
 					alNewMapping.add( (rdmGenerator.nextInt( intMappingLength ) + 1) % 3 + 1 );
 					break;
 				case HALF:
 					alNewMapping.add( (rdmGenerator.nextInt( intMappingLength ) + 1) % (intMappingLength / 2) + 1 );
+					break;
+				case MIX:
+					if(intIndex<intMappingLength/2){
+						alNewMapping.add( rdmGenerator.nextInt( 2 ) * intMappingLength/2  + 1 );
+					}else{
+						int j = 1;
+						while (alNewMapping.contains(j)) {
+						  j = rdmGenerator.nextInt( intMappingLength ) + 1;
+						}
+						alNewMapping.add(j);
+					}
 					break;
 			}
 		}
