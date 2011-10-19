@@ -24,7 +24,7 @@ public class ControllerStrategy extends Strategy {
 	private enum MappingType {
 		BINARY, PERM, DISJOINT, OTHER
 	}
-	private final static int CROSS_THRESHOLD = 1001;
+	private final static int CROSS_THRESHOLD = 1010;
 	
 	public ControllerStrategy(boolean debug) {
 		super(debug);
@@ -77,9 +77,13 @@ public class ControllerStrategy extends Strategy {
 			case PERM:
 				currentStrat = new PermStrategy(DEBUG);
 				break;
-			case DISJOINT:	
-				currentStrat = new DisjointStrategy(DEBUG,2);
-//				break;
+			case DISJOINT:
+				if (mappingLength < 20) {
+					currentStrat = new DisjointStrategy(DEBUG,2);
+				} else {
+					currentStrat = new LowNStrategy(DEBUG);
+				}
+				break;
 			case OTHER:
 				if (mappingLength < CROSS_THRESHOLD) {
 					currentStrat = new CrossStrategy(DEBUG);

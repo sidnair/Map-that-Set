@@ -13,10 +13,10 @@ public class G5CustomMapper extends Mapper
 	int intMappingLength;
 	String strID = "G5CustomMapper";
 	
-	int maxN = 7;
+	int maxN = 4;
 	
 	// CHANGE THIS TO CHANGE MAPPING STRAT
-	private final Mapping mappingStrat = Mapping.RANDOM;
+	private final Mapping mappingStrat = Mapping.MAX_N;
 
 	
 	private enum Mapping {

@@ -44,7 +44,7 @@ public class DisjointStrategy extends Strategy {
 		bindings = new HashMap<Integer, Set<Integer>>();
 		currentState = State.INITIAL_GUESSES;
 		currentState.setLastStart(0);
-		initialGroupSize = determineInitialGroupSize();
+		initialGroupSize = 2; //determineInitialGroupSize();
 	}
 	
 	private int determineInitialGroupSize() {
@@ -132,7 +132,7 @@ public class DisjointStrategy extends Strategy {
 				}
 			}
 		}
-		
+
 		updateBindings(currentQuery);
 		
 		return currentQuery;
