@@ -16,8 +16,8 @@ public class G5Guesser extends Guesser {
 	public void startNewMapping(int mappingLength) {
 		// Handle special cases of map size; for the general case, use the 
 		// controller strategy.
-		if (mappingLength == 3) {
-			strategy = new ThreeStrategy(DEBUG);
+		if (mappingLength <= 5) {
+			strategy = new LowNStrategy(DEBUG);
 		} else {
 			strategy = new ControllerStrategy(DEBUG);
 		}

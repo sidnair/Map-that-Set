@@ -63,6 +63,9 @@ public class ControllerStrategy extends Strategy {
 				// Currently never use disjoint strategy.
 				// currentStrat = new DisjointStrategy(DEBUG);
 				break;
+			default:
+				System.err.println("No strategy selected...");
+				System.exit(1);
 			}
 			currentStrat.startNewMapping(mappingLength, currentGuess, 
 					result);
