@@ -16,6 +16,7 @@ public class ControllerStrategy extends Strategy {
 	private int mappingLength;
 	private ArrayList<Integer> currentGuess;
 	private ArrayList<SubProblem> subproblems;
+	private ArrayList<Integer> lastSubProblemQuery;
 	private enum MappingType {
 		BINARY, PERM, OTHER
 	}
@@ -30,6 +31,7 @@ public class ControllerStrategy extends Strategy {
 		stratKnown = false;
 		currentStrat = null;
 		subproblems = new ArrayList<SubProblem>();
+		lastSubProblemQuery = new ArrayList<Integer>();
 	}
 
 	@Override
@@ -108,11 +110,16 @@ public class ControllerStrategy extends Strategy {
 	}
 
 	private void setSubProblemsResult(ArrayList<Integer> result) {
-		// TODO
-		// for each subproblem
-		//   call setResult on intersection of subproblem range and result
-		
-		// for general: call setResult
+		// for each subproblem, call setResult on intersection of subproblem
+		// range and result
+		for (SubProblem sp : subproblems) {
+			ArrayList<Integer> relevantResults =
+					new ArrayList<Integer>(sp.getRange());
+			relevantResults.retainAll(result);
+			sp.setResult(relevantResults);
+		}
+		// Call set result on the main solver
+		((SubProblemMaster) currentStrat).setResult(result, lastSubProblemQuery);
 	}
 
 	private MappingType determineMappingType(ArrayList<Integer> result,

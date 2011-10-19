@@ -10,6 +10,7 @@ public class SubProblem {
 	
 	private Strategy strategy;
 	private ArrayList<Integer> domain;
+	private ArrayList<Integer> range;
 	private Map<Integer, Integer> restoreDomainMap;
 	private Map<Integer, Integer> normalizeRangeMap;
 	
@@ -20,6 +21,7 @@ public class SubProblem {
 	public SubProblem(boolean debug, ArrayList<Integer> domain,
 			ArrayList<Integer> range, SubProblemStrategy  strategyType) {
 		this.domain = domain;
+		this.range = range;
 		int n = 1;
 		restoreDomainMap = new HashMap<Integer, Integer>();
 		for (int i : domain) {
@@ -66,6 +68,14 @@ public class SubProblem {
 		for (int i : result) {
 			remappedResult.add(normalizeRangeMap.get(i));
 		}
+	}
+	
+	public ArrayList<Integer> getRange() {
+		return range;
+	}
+	
+	public ArrayList<Integer> getDomain() {
+		return domain;
 	}
 
 }

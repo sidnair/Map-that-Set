@@ -8,7 +8,7 @@ import java.util.Set;
 
 import mapthatset.sim.GuesserAction;
 
-public class CrossStrategy extends Strategy {
+public class CrossStrategy extends Strategy implements SubProblemMaster {
 
 	private int mappingLength;
 	private ArrayList<Integer> currentQuery;
@@ -87,7 +87,7 @@ public class CrossStrategy extends Strategy {
 	 * If the query shouldn't be the one used internally (e.g. if this is only
 	 * part of a subproblem.
 	 */
-	protected void setResult(ArrayList<Integer> result,
+	public void setResult(ArrayList<Integer> result,
 			ArrayList<Integer> query) {
 		mappingTracker.updateTracker(result, query);
 		for (int i : query) {
