@@ -16,7 +16,7 @@ public class G5CustomMapper extends Mapper
 	int maxN = 7;
 	
 	// CHANGE THIS TO CHANGE MAPPING STRAT
-	private final Mapping mappingStrat = Mapping.MIX;
+	private final Mapping mappingStrat = Mapping.RANDOM;
 
 	
 	private enum Mapping {

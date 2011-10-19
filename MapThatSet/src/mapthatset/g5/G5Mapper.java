@@ -3,8 +3,6 @@ package mapthatset.g5;
 import java.util.ArrayList;
 import java.util.Random;
 
-import com.sun.org.apache.bcel.internal.generic.NEW;
-
 import mapthatset.sim.GuesserAction;
 import mapthatset.sim.Mapper;
 import mapthatset.g5.RandomLayer;

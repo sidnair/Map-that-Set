@@ -24,7 +24,7 @@ public class ControllerStrategy extends Strategy {
 	private enum MappingType {
 		BINARY, PERM, DISJOINT, OTHER
 	}
-	private final static int CROSS_THRESHOLD = 1501;
+	private final static int CROSS_THRESHOLD = 1001;
 	
 	public ControllerStrategy(boolean debug) {
 		super(debug);
@@ -84,7 +84,7 @@ public class ControllerStrategy extends Strategy {
 				if (mappingLength < CROSS_THRESHOLD) {
 					currentStrat = new CrossStrategy(DEBUG);
 				} else {
-					currentStrat = new SimpleStrategy(DEBUG);
+					currentStrat = new LowNStrategy(DEBUG);
 				}
 				break;
 			default:

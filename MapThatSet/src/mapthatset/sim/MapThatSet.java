@@ -113,7 +113,7 @@ public class MapThatSet
 						total = System.currentTimeMillis() - start;
 						System.out.println("\nnextAction - " + total + "\n");
 						if (total > 1000) {
-//							System.exit(1);
+							System.exit(1);
 						}
 						
 						strActionType = gsaGA.getType();
@@ -151,7 +151,7 @@ public class MapThatSet
 							total = System.currentTimeMillis() - start;
 							System.out.println("\nsetResult" + (total) + "\n");
 							if (total > 1000) {
-//								System.exit(1);
+								System.exit(1);
 							}
 							System.out.println( alActionContent + " --> " + alQueryResult + "\t" );
 						}
