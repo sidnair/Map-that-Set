@@ -59,9 +59,9 @@ public class ControllerStrategy extends Strategy {
 				currentStrat = new PermStrategy(DEBUG);
 				break;
 			case OTHER:
-				currentStrat = new CrossStrategy(DEBUG);
+				currentStrat = new CrossStrategy(true);
 				// Currently never use disjoint strategy.
-				// currentStrat = new DisjointStrategy(DEBUG);
+//				currentStrat = new DisjointStrategy(DEBUG,2);
 				break;
 			default:
 				System.err.println("No strategy selected...");
