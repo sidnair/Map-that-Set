@@ -75,6 +75,9 @@ public class ControllerStrategy extends Strategy {
 				// Currently never use disjoint strategy.
 				// currentStrat = new DisjointStrategy(DEBUG);
 				break;
+			default:
+				System.err.println("No strategy selected...");
+				System.exit(1);
 			}
 			currentStrat.startNewMapping(mappingLength, currentGuess, 
 					result);
@@ -84,15 +87,32 @@ public class ControllerStrategy extends Strategy {
 	}
 	
 	private void updateSubProblems() {
+		// TODO
+		// if a subproblem is solved, remove it from the list (just check
+		// the stuff in the domain and see if they all map to one...)
 		
+		// create a domain list of ALL - U(existing subproblem domains)
+		
+		// get disjoint graphs from ALL, create new subproblems
 	}
 	
-	private GuesserAction nextActionWithSubProblems() {	
+	private GuesserAction nextActionWithSubProblems() {
+		// TODO
+		// iterate through the subproblem solvers, adding all the guesses to
+		// the guess list
+		
+		// restrict domain on the general problem (All - U(subproblem domains))
+		
+		// add the general stuff to the guess list
 		return null;
 	}
 
 	private void setSubProblemsResult(ArrayList<Integer> result) {
-		// TODO Auto-generated method stub
+		// TODO
+		// for each subproblem
+		//   call setResult on intersection of subproblem range and result
+		
+		// for general: call setResult
 	}
 
 	private MappingType determineMappingType(ArrayList<Integer> result,

@@ -63,7 +63,6 @@ public class CrossStrategy extends Strategy {
 			int firstInt = legalVars.get(i);
 			if (!isPairUsed(firstInt, currentQuery)) {
 				currentQuery.add(firstInt);
-				guessCount[firstInt - 1]++;
 			}
 		}
 		return new GuesserAction("q", currentQuery);
@@ -81,9 +80,19 @@ public class CrossStrategy extends Strategy {
 
 	@Override
 	protected void setResult(ArrayList<Integer> result) {
-		mappingTracker.updateTracker(result, currentQuery);
-		for (int i : currentQuery) {
-			for (int j : currentQuery) {
+		setResult(result, currentQuery);
+	}
+	
+	/*
+	 * If the query shouldn't be the one used internally (e.g. if this is only
+	 * part of a subproblem.
+	 */
+	protected void setResult(ArrayList<Integer> result,
+			ArrayList<Integer> query) {
+		mappingTracker.updateTracker(result, query);
+		for (int i : query) {
+			guessCount[i - 1]++;
+			for (int j : query) {
 				if (i < j) {
 					guessedPairs.add(getPairString(i, j));
 				}
