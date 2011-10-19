@@ -14,6 +14,7 @@ public class PermStrategy extends Strategy {
 	private Vector<QueriesResponses> previousResults;
 	private ArrayList<Integer> guess;
 	private int[] placeKeeperArray;
+	private Vector<Integer> problemNums;
 	
 	private class QueriesResponses {
 		private TreeSet<Integer> query = new TreeSet<Integer>();
@@ -66,13 +67,13 @@ public class PermStrategy extends Strategy {
 		return result;
 	}
 	
-	private static ArrayList<Integer> union (ArrayList<Integer> first, ArrayList<Integer> second){
+	private static ArrayList<Integer> allBut (ArrayList<Integer> first, ArrayList<Integer> second){
 		ArrayList<Integer> result = new ArrayList<Integer>();
 		result.addAll(first);
 		
-		for(Integer i : second){
-			if(!result.contains(i)){
-				result.add(i);
+		for(int i = result.size() - 1; i >= 0; --i){
+			if(second.contains(result.get(i))){
+				result.remove(i);
 			}
 		}
 		
@@ -88,9 +89,15 @@ public class PermStrategy extends Strategy {
 		mappingSize = mappingLength;
 		previousResults = new Vector<QueriesResponses>();
 		guess = new ArrayList<Integer>();
-		arraySplitSpacing = (int) Math.ceil(mappingLength/2.0);
+		
+		arraySplitSpacing = 1;
+		while(arraySplitSpacing < (int)Math.ceil(mappingLength/2.0)){
+			arraySplitSpacing *= 2;
+		}
+		
 		placeKeeperArray = new int[mappingLength];
 		counter = 0;
+		problemNums = new Vector<Integer>();
 		
 		for(int i = 1; i <= mappingLength; ++i){
 			guess.add(0);
@@ -101,7 +108,9 @@ public class PermStrategy extends Strategy {
 
 	@Override
 	public GuesserAction nextAction() {
-		System.out.println("nextGuess!");
+		if(DEBUG){
+			System.out.println("nextGuess!");
+		}
 		while(arraySplitSpacing > 0){
 			counter = 0;
 			ArrayList<Integer> query = new ArrayList<Integer>();
@@ -115,51 +124,77 @@ public class PermStrategy extends Strategy {
 				counter += arraySplitSpacing;
 				add = !add;
 			}
-			arraySplitSpacing /= 2;
+			arraySplitSpacing = (arraySplitSpacing > 1) ? (int)(arraySplitSpacing/2.0 + 0.5) : 0;
 			QueriesResponses qr = new QueriesResponses();
 			qr.setQuery(query);
 			previousResults.add(qr);
 			return (new GuesserAction("q", query));
 		}
 		
+		
 		for(int i = 1; i <= mappingSize; ++i){
-			ArrayList<Integer> intersect = new ArrayList<Integer>();
-			QueriesResponses qr = null;
-			for(int j = 0; j < previousResults.size(); ++j){
-				if(previousResults.get(j).getQuery().contains(i)){
-					qr = previousResults.get(j);
-					intersect = qr.TStoAL('r');
-					break;
-				}
-			}
-			for(int j = 0; j < previousResults.size(); ++j){
-				if(previousResults.get(j).getQuery().contains(i)){
-					intersect = intersection(intersect, previousResults.get(j).TStoAL('r'));
-				}
-			}
-			if(qr == null){
+			this.createGuess(i);
+		}
+		while(!problemNums.isEmpty()){
+			int index = problemNums.remove(0);
+			if(problemNums.isEmpty()){
 				for(int j = 1; j <= mappingSize; ++j){
 					if(!guess.contains(new Integer(j))){
-						intersect.add(new Integer(j));
+						guess.remove(index - 1);
+						guess.add(index - 1, new Integer(j));
 						break;
 					}
 				}
-			}
-			if(intersect.size() == 1){
-				guess.remove(i-1);
-				guess.add(i-1, intersect.get(0));
 			} else {
-				for(int j = intersect.size() - 1; j >= 0; --j){
-					if(guess.contains(intersect.get(j))){
-						intersect.remove(j);
-					}
-				}
-				guess.remove(i-1);
-				guess.add(i-1, intersect.get(0));
+				createGuess (index);
 			}
-			
 		}
+		
 		return (new GuesserAction("g",guess));
+	}
+	
+	private void createGuess (int i){
+		if (DEBUG){
+			System.out.println("Guessing for " + i);
+		}
+		ArrayList<Integer> intersect = new ArrayList<Integer>();
+		QueriesResponses qr = null;
+		for(int j = 0; j < previousResults.size(); ++j){
+			if(previousResults.get(j).getQuery().contains(i)){
+				qr = previousResults.get(j);
+				intersect = qr.TStoAL('r');
+				break;
+			}
+		}
+		if(i == 9)
+			i += 0;
+		for(int j = 0; j < previousResults.size(); ++j){
+			if(previousResults.get(j).getQuery().contains(i)){
+				intersect = intersection(intersect, previousResults.get(j).TStoAL('r'));
+			} else {
+				intersect = allBut(intersect,previousResults.get(j).TStoAL('r'));
+			}
+		}
+		if(qr == null){
+			problemNums.add(new Integer(i));
+			return;
+		}
+		if(intersect.size() == 1){
+			guess.remove(i-1);
+			guess.add(i-1, intersect.get(0));
+		} else {
+			for(int j = intersect.size() - 1; j >= 0; --j){
+				if(guess.contains(intersect.get(j))){
+					intersect.remove(j);
+				}
+			}
+			if(intersect.size() > 1){
+				problemNums.add(new Integer(i));
+			} else {
+				guess.remove(i - 1);
+				guess.add(i - 1, intersect.get(0));
+			}
+		}
 	}
 
 	@Override
