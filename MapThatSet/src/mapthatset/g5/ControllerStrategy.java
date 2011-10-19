@@ -22,7 +22,7 @@ public class ControllerStrategy extends Strategy {
 	private ArrayList<SubProblem> subproblems;
 	private ArrayList<Integer> lastSubProblemQuery;
 	private enum MappingType {
-		BINARY, PERM, OTHER
+		BINARY, PERM, DISJOINT, OTHER
 	}
 	private final static int CROSS_THRESHOLD = 3000;
 	
@@ -78,6 +78,9 @@ public class ControllerStrategy extends Strategy {
 			case PERM:
 				currentStrat = new PermStrategy(DEBUG);
 				break;
+			case DISJOINT:	
+				currentStrat = new DisjointStrategy(DEBUG,2);
+				break;
 			case OTHER:
 				if (mappingLength < CROSS_THRESHOLD) {
 					currentStrat = new CrossStrategy(DEBUG);
@@ -114,7 +117,7 @@ public class ControllerStrategy extends Strategy {
 			}
 		}
 		
-		// TODO - get disjoint graphs from unmatched, create new subproblems
+		// get disjoint graphs from unmatched, create new subproblems
 		// and add
 		List<Region> regions = DisjointGraphFinder.findDisjointGraphs(
 				mappingLength, 
@@ -195,6 +198,10 @@ public class ControllerStrategy extends Strategy {
 		}
 		if (result.size() == 2) {
 			return MappingType.BINARY;
+		}
+		// Only gets reached if the N > 6
+		if (result.size()<=7){
+			return MappingType.DISJOINT;
 		}
 		return MappingType.OTHER;
 	}
