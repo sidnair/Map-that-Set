@@ -50,20 +50,18 @@ public class ControllerStrategy extends Strategy {
 	public void setResult(ArrayList<Integer> result) {
 		if (stratKnown) {
 			currentStrat.setResult(result);
-		} 
-		
-		else {
+		} else {
 			switch (determineMappingType(result, currentGuess)) {
 			case BINARY:
 				 currentStrat = new BinaryStrategy(DEBUG);
 				break;
 			case PERM:
-				//currentStrat = new CrossStrategy(DEBUG);
 				currentStrat = new PermStrategy(DEBUG);
 				break;
 			case OTHER:
 				currentStrat = new CrossStrategy(DEBUG);
-//				currentStrat = new DisjointStrategy(DEBUG);
+				// Currently never use disjoint strategy.
+				// currentStrat = new DisjointStrategy(DEBUG);
 				break;
 			}
 			currentStrat.startNewMapping(mappingLength, currentGuess, 
@@ -88,7 +86,7 @@ public class ControllerStrategy extends Strategy {
 	protected void startNewMapping(int mappingLength, ArrayList<Integer> query,
 			ArrayList<Integer> result) {
 		System.err.println("Controller strat shouldn't be called with " +
-			"initial results known...");
+					"initial results known...");
 		System.exit(1);
 	}
 
