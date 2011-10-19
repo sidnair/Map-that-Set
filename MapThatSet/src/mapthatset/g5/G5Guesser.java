@@ -8,7 +8,7 @@ import mapthatset.sim.GuesserAction;
 public class G5Guesser extends Guesser {
 	
 	private final boolean DEBUG = false;
-	private final boolean RANDOMIZE = !DEBUG && false;
+	private final boolean RANDOMIZE = !DEBUG;
 	private Strategy strategy;
 	private RandomLayer randomLayer;
 	private int mappingLength;
@@ -54,10 +54,11 @@ public class G5Guesser extends Guesser {
 	 * @return corrected GuesserAction.
 	 */
 	private GuesserAction decodeGuess(GuesserAction action) {
+		
 		Integer[] decodedGuess = new Integer[mappingLength];
-		for (int i = 1; i <= mappingLength; i++) {
-			int newIndex = randomLayer.getMapping(i) - 1;
-			decodedGuess[newIndex] = action.getContent().get(i - 1);
+		for (int i = 0; i < mappingLength; i++) {
+			int newIndex = randomLayer.getMapping(i);
+			decodedGuess[newIndex] = action.getContent().get(i);
 		}
 		return new GuesserAction("g",
 					new ArrayList<Integer>(Arrays.asList(decodedGuess)));
@@ -76,7 +77,7 @@ public class G5Guesser extends Guesser {
 	private GuesserAction encodeQuery(GuesserAction action) {
 		ArrayList<Integer> obfuscatedGuess = new ArrayList<Integer>();
 		for (int i : action.getContent()) {
-			obfuscatedGuess.add(randomLayer.getMapping(i));
+			obfuscatedGuess.add(randomLayer.getMapping(i-1)+1);
 		}
 		return new GuesserAction("q", obfuscatedGuess);
 	}
@@ -86,6 +87,7 @@ public class G5Guesser extends Guesser {
 		strategy.setResult(result);
 	}
 	
+
 	@Override
 	public String getID() {
 		return "G5Guesser";
