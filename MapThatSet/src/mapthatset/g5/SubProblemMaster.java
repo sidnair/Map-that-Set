@@ -12,5 +12,7 @@ public interface SubProblemMaster {
 	boolean isSolved(SubProblem sp);
 
 	MappingTracker getMappingTracker();
+
+	void solve(Integer integer, Integer integer2);
 	
 }

@@ -199,8 +199,9 @@ public class PermStrategy extends Strategy {
 			if(intersect.size() > 1){
 				problemNums.add(new Integer(i));
 			} else {
-				guess.remove(i - 1);
-				guess.add(i - 1, intersect.get(0));
+//				System.out.println("\nYEEAAAH");
+//				guess.remove(i - 1);
+//				guess.add(i - 1, intersect.get(0));
 			}
 		}
 	}

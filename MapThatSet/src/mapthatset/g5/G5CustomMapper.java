@@ -16,7 +16,7 @@ public class G5CustomMapper extends Mapper
 	int maxN = 7;
 	
 	// CHANGE THIS TO CHANGE MAPPING STRAT
-	private final Mapping mappingStrat = Mapping.MAX_N;
+	private final Mapping mappingStrat = Mapping.OUTLAYER;
 
 	
 	private enum Mapping {

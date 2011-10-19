@@ -131,4 +131,9 @@ public class CrossStrategy extends Strategy implements SubProblemMaster {
 		return mappingTracker;
 	}
 
+	@Override
+	public void solve(Integer mapper, Integer mappedTo) {
+		mappingTracker.solve(mapper, mappedTo);
+	}
+
 }

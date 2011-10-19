@@ -43,7 +43,6 @@ public class ControllerStrategy extends Strategy {
 	public GuesserAction nextAction() {
 		if (stratKnown) {
 			if (ENABLE_SUBPROBLEMS && currentStrat.supportsSubProblems()) {
-//				return currentStrat.nextAction();
 				return nextActionWithSubProblems();
 			} else {
 				return currentStrat.nextAction();
@@ -80,7 +79,7 @@ public class ControllerStrategy extends Strategy {
 				break;
 			case DISJOINT:	
 				currentStrat = new DisjointStrategy(DEBUG,2);
-				break;
+//				break;
 			case OTHER:
 				if (mappingLength < CROSS_THRESHOLD) {
 					currentStrat = new CrossStrategy(DEBUG);
@@ -156,8 +155,16 @@ public class ControllerStrategy extends Strategy {
 		
 		// iterate through the subproblem solvers, adding all the guesses to
 		// the guess list
-		for (SubProblem sp : subproblems) {
-			nextQuery.addAll(sp.nextAction().getContent());
+		Iterator<SubProblem> iter = subproblems.iterator();
+		while(iter.hasNext()) {
+			SubProblem sp = iter.next();
+			GuesserAction ga = sp.nextAction();
+			if (ga.getType().equals("g")) {
+				sp.solveSubsection((SubProblemMaster) currentStrat);
+				iter.remove();
+			} else {
+				nextQuery.addAll(ga.getContent());
+			}
 		}
 		
 		// restrict domain on the general problem (All - U(subproblem domains))
@@ -185,6 +192,7 @@ public class ControllerStrategy extends Strategy {
 			ArrayList<Integer> relevantResults =
 					new ArrayList<Integer>(sp.getRange());
 			relevantResults.retainAll(result);
+			System.out.println(relevantResults);
 			sp.setResult(relevantResults);
 		}
 		// Call set result on the main solver

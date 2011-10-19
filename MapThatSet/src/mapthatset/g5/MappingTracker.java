@@ -181,5 +181,15 @@ public class MappingTracker {
 	public boolean isKnown(int i) {
 		return possibleMappings.get(i).size() == 1;
 	}
+	
+	public void solve(Integer mapper, Integer mappedTo) {
+		if (!possibleMappings.get(mapper).contains(mappedTo)) {
+			System.err.println("\nSanity check failed...\n");
+			System.exit(1);
+		}
+		Set<Integer> answer = new HashSet<Integer>();
+		answer.add(mappedTo);
+		possibleMappings.put(mapper, answer);
+	}
 
 }
