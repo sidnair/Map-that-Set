@@ -21,4 +21,6 @@ public abstract class Strategy {
 	protected abstract void startNewMapping(int mappingLength,
 			ArrayList<Integer> query, ArrayList<Integer> result);
 
+	protected abstract boolean supportsSubProblems();
+
 }

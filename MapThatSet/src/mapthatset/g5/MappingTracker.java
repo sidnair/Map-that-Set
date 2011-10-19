@@ -134,6 +134,19 @@ public class MappingTracker {
 		return possibleMappings;
 	}
 	
+	/* Intersect a mapping with each of a list of other mappings. 
+	public void intersectMappings(
+			ArrayList<Map<Integer, Set<Integer>>> others) {
+		for (Map<Integer, Set<Integer>> m : others) {
+			for (int i : m.keySet()) {
+				if (possibleMappings.get(i) != null) {
+					possibleMappings.get(i).retainAll(m.get(i));
+				}
+			}
+		}
+	}
+	*/
+	
 	public boolean isKnown(int i) {
 		return possibleMappings.get(i).size() == 1;
 	}

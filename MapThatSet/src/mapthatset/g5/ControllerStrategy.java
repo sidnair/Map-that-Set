@@ -10,10 +10,12 @@ import mapthatset.sim.GuesserAction;
  */
 public class ControllerStrategy extends Strategy {
 
+	private boolean ENABLE_SUBPROBLEMS = false;
 	private Strategy currentStrat;
 	private boolean stratKnown;
 	private int mappingLength;
 	private ArrayList<Integer> currentGuess;
+	private ArrayList<SubProblem> subproblems;
 	private enum MappingType {
 		BINARY, PERM, OTHER
 	}
@@ -27,17 +29,23 @@ public class ControllerStrategy extends Strategy {
 		this.mappingLength = mappingLength;
 		stratKnown = false;
 		currentStrat = null;
+		subproblems = new ArrayList<SubProblem>();
 	}
 
 	@Override
 	public GuesserAction nextAction() {
 		if (stratKnown) {
-			return currentStrat.nextAction();
+			if (ENABLE_SUBPROBLEMS) {
+				return nextActionWithSubProblems();
+			} else {
+				return currentStrat.nextAction();
+			}
 		} else {
 			return makeInitialGuess();
 		}
 	}
 	
+
 	private GuesserAction makeInitialGuess() {
 		currentGuess = new ArrayList<Integer>();
 		for (int i = 1; i <= mappingLength; i++) {
@@ -49,7 +57,11 @@ public class ControllerStrategy extends Strategy {
 	@Override
 	public void setResult(ArrayList<Integer> result) {
 		if (stratKnown) {
-			currentStrat.setResult(result);
+			if (ENABLE_SUBPROBLEMS) {
+				setSubProblemsResult(result);
+			} else {
+				currentStrat.setResult(result);
+			}
 		} else {
 			switch (determineMappingType(result, currentGuess)) {
 			case BINARY:
@@ -70,6 +82,18 @@ public class ControllerStrategy extends Strategy {
 		}
 
 	}
+	
+	private void updateSubProblems() {
+		
+	}
+	
+	private GuesserAction nextActionWithSubProblems() {	
+		return null;
+	}
+
+	private void setSubProblemsResult(ArrayList<Integer> result) {
+		// TODO Auto-generated method stub
+	}
 
 	private MappingType determineMappingType(ArrayList<Integer> result,
 			ArrayList<Integer> guess) {
@@ -88,6 +112,11 @@ public class ControllerStrategy extends Strategy {
 		System.err.println("Controller strat shouldn't be called with " +
 					"initial results known...");
 		System.exit(1);
+	}
+
+	@Override
+	protected boolean supportsSubProblems() {
+		return false;
 	}
 
 }

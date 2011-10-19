@@ -14,7 +14,8 @@ public class G5CustomMapper extends Mapper
 	String strID = "G5CustomMapper";
 	
 	// CHANGE THIS TO CHANGE MAPPING STRAT
-	private final Mapping mappingStrat = Mapping.BINARY;
+	private final Mapping mappingStrat = Mapping.PERM
+			;
 	
 	private enum Mapping {
 		RANDOM, PERM, BINARY, TRIPLE, HALF,MIX;

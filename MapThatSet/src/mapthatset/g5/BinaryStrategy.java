@@ -8,6 +8,7 @@ import mapthatset.sim.GuesserAction;
  * For small n, special strategy (nash equilibrium) should be considered.
  */
 public class BinaryStrategy extends Strategy {
+	
 	private int mappingLength;
 	private ArrayList<Integer> result;
 	private ArrayList<Integer> lastQuery;
@@ -139,6 +140,11 @@ public class BinaryStrategy extends Strategy {
 			
 		}
 		return;
+	}
+
+	@Override
+	protected boolean supportsSubProblems() {
+		return false;
 	}
 
 }

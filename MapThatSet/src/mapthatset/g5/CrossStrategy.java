@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.Set;
 
 import mapthatset.sim.GuesserAction;
 
@@ -13,6 +14,7 @@ public class CrossStrategy extends Strategy {
 	private ArrayList<Integer> currentQuery;
 	private MappingTracker mappingTracker;
 	private HashSet<String> guessedPairs;
+	private Set<Integer> domain;
 	int[] guessCount;
 
 	protected CrossStrategy(boolean debug) {
@@ -25,7 +27,10 @@ public class CrossStrategy extends Strategy {
 		mappingTracker = new MappingTracker(mappingLength);
 		guessCount = new int[mappingLength];
 		guessedPairs = new HashSet<String>();
-		
+		this.domain = new HashSet<Integer>();
+		for (int i = 1; i <= mappingLength; i++) {
+			domain.add(i);
+		}
 	}
 	protected void startNewMapping(int mappingLength,
 			ArrayList<Integer> query, ArrayList<Integer> result) {
@@ -43,7 +48,7 @@ public class CrossStrategy extends Strategy {
 		currentQuery = new ArrayList<Integer>();
 		ArrayList<Integer> legalVars = new ArrayList<Integer>();
 		for (int i = 1; i <= mappingLength; i++) {
-			if (!mappingTracker.isKnown(i)) {
+			if (!mappingTracker.isKnown(i) && domain.contains(i)) {
 				legalVars.add(i);
 			}
 		}
@@ -88,6 +93,15 @@ public class CrossStrategy extends Strategy {
 	
 	private String getPairString(int a, int b) {
 		return Math.min(a, b) + "," + Math.max(a, b);
+	}
+	
+	public void restrictDomain(Set<Integer> domain) {
+		this.domain = domain;
+	}
+
+	@Override
+	protected boolean supportsSubProblems() {
+		return true;
 	}
 
 }

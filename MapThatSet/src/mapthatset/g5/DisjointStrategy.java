@@ -157,4 +157,9 @@ public class DisjointStrategy extends Strategy {
 		mappingTracker.updateTracker(result, query);
 	}
 
+	@Override
+	protected boolean supportsSubProblems() {
+		return false;
+	}
+
 }

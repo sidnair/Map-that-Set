@@ -211,4 +211,9 @@ public class PermStrategy extends Strategy {
 		qr.setResponse(result);
 	}
 
+	@Override
+	protected boolean supportsSubProblems() {
+		return false;
+	}
+
 }
