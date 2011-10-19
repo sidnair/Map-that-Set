@@ -8,7 +8,7 @@ import mapthatset.sim.GuesserAction;
 public class G5Guesser extends Guesser {
 	
 	private final boolean DEBUG = false;
-	private final boolean RANDOMIZE = !DEBUG && false;
+	private final boolean RANDOMIZE = !DEBUG;
 	private Strategy strategy;
 	private RandomLayer randomLayer;
 	private int mappingLength;

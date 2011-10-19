@@ -16,12 +16,16 @@ public class SubProblem {
 	private Map<Integer, Integer> normalizeRangeMap;
 	private GuesserAction lastGottenAction;
 	
+	private static int sharedId = 0;
+	private int id;
+	
 	public enum SubProblemStrategy {
 		BINARY, PERM
 	}
 	
 	public SubProblem(boolean debug, ArrayList<Integer> domain,
 			ArrayList<Integer> range, SubProblemStrategy  strategyType) {
+		id = sharedId++;
 		this.domain = domain;
 		this.range = range;
 		int n = 1;
@@ -46,6 +50,7 @@ public class SubProblem {
 				break;
 			case PERM:
 				strategy = new PermStrategy(debug);
+//				strategy = new SimpleStrategy(debug);
 				break;
 			default:
 				System.err.println("Invalid solver for subproblem.");
@@ -89,7 +94,7 @@ public class SubProblem {
 		ArrayList<Integer> unalignedSolution = lastGottenAction.getContent();
 		for (int i = 1; i <= unalignedSolution.size(); i++) {
 			spm.solve(restoreDomainMap.get(i),
-					restoreRangeMap.get(unalignedSolution.get(i)));
+					restoreRangeMap.get(unalignedSolution.get(i-1)));
 		}
 	}
 	

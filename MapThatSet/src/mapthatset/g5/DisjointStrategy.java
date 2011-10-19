@@ -10,10 +10,6 @@ import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
 
 import mapthatset.sim.GuesserAction;
 
-/*
- * After initial guessing in chunks, guess in sets of numbers that map to a list
- * of possible numbers that has at most one repeat.
- */
 public class DisjointStrategy extends Strategy {
 	
 	private int initialGroupSize;

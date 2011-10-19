@@ -24,7 +24,7 @@ public class ControllerStrategy extends Strategy {
 	private enum MappingType {
 		BINARY, PERM, DISJOINT, OTHER
 	}
-	private final static int CROSS_THRESHOLD = 3000;
+	private final static int CROSS_THRESHOLD = 1501;
 	
 	public ControllerStrategy(boolean debug) {
 		super(debug);
@@ -133,15 +133,21 @@ public class ControllerStrategy extends Strategy {
 			}
 			// Perm
 			if (r.domain.size() == r.range.size() &&
-					r.domain.size() != mappingLength) {
+					r.domain.size() != mappingLength
+					&& r.domain.contains(34)) {
 				subproblems.add(new SubProblem(DEBUG, r.domain, r.range,
 						SubProblem.SubProblemStrategy.PERM));
-				System.out.println("\nPEEERM\n" + r.domain + "\n" + r.range);
-//				System.exit(1);
+				unmatchedDomains.removeAll(r.domain);
+				if (DEBUG) {
+					System.out.println("\nPERM\n" + r.domain + "\n" + r.range);
+				}
 			} else if (r.range.size() == 2){
+				unmatchedDomains.removeAll(r.domain);
 				subproblems.add(new SubProblem(DEBUG, r.domain, r.range,
-						SubProblem.SubProblemStrategy.PERM));
-//				System.out.println("\nBINN\t" + r.domain + "\t" + r.range);
+						SubProblem.SubProblemStrategy.BINARY));
+				if (DEBUG) {
+					System.out.println("\nBINN\t" + r.domain + "\t" + r.range);
+				}
 			}
 		}
 		
@@ -166,7 +172,6 @@ public class ControllerStrategy extends Strategy {
 				nextQuery.addAll(ga.getContent());
 			}
 		}
-		
 		
 		// restrict domain on the general problem (All - U(subproblem domains))
 		((SubProblemMaster) currentStrat).restrictDomain(unmatchedDomain);

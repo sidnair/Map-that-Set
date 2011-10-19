@@ -37,7 +37,7 @@ public class RandomLayer {
 	//my original idea of this class was do randomly map array 
 	protected ArrayList<Integer> randomize(ArrayList<Integer> ori){
 		if(ori.size()!=length){
-			System.out.println("wrong");
+			System.err.println("wrong");
 			return null;
 		}
 		
@@ -53,7 +53,7 @@ public class RandomLayer {
 	//my original idea of this class was do randomly map array 
 	protected ArrayList<Integer> deRandomize(ArrayList<Integer> ori){
 			if(ori.size()!=length){
-				System.out.println("wrong");
+				System.err.println("wrong");
 				return null;
 			}
 			

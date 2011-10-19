@@ -1,11 +1,8 @@
 package mapthatset.sim;
 
-import java.io.Console;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.Scanner;
 
 
@@ -141,8 +138,8 @@ public class MapThatSet
 //							System.out.println("\n***\n");
 //							long start = System.currentTimeMillis();
 							gsrCurrent.setResult( alQueryResult );
-//							System.out.println(System.currentTimeMillis() - start);
-							System.out.print( alActionContent + " --> " + alQueryResult + "\t" );
+//							System.out.println("\n" + (System.currentTimeMillis() - start) + "\n");
+							System.out.println( alActionContent + " --> " + alQueryResult + "\t" );
 						}
 					}
 					mpnCurrent.setScore( intRoundScore );

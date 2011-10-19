@@ -76,24 +76,10 @@ public class DisjointGraphFinder {
 				mappeeSet.addAll(mapperToMappees.get(mappedTo -1));
 			}
 			
-//			System.out.println("\n:(");
-//			System.out.println(mappeeSet);
-//			System.out.println(group);
-//			System.out.println(":(");
-			
 			regions.add(new Region(mappeeSet, group));
 		}
 		return regions;
 
-		/*
-			System.out.println("\n==========");
-			System.out.println(coverage);
-			System.out.println(mapperToGroupedMappers);
-			System.out.println(mapperToMappees);
-			System.out.println(mapperGroups);
-			System.out.println("*****");
-			*/
-		
 	}
 
 	
