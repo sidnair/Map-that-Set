@@ -1,6 +1,8 @@
 package mapthatset.g5;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import mapthatset.sim.GuesserAction;
 
@@ -100,13 +102,34 @@ public class ControllerStrategy extends Strategy {
 	
 	private GuesserAction nextActionWithSubProblems() {
 		// TODO
+		Set<Integer> nextQuery = new HashSet<Integer>();
+		Set<Integer> remainingDomain = new HashSet<Integer>();
+		for (int i = 1; i <= mappingLength; i++) {
+			remainingDomain.add(i);
+		}
+		
 		// iterate through the subproblem solvers, adding all the guesses to
 		// the guess list
+		for (SubProblem sp : subproblems) {
+			nextQuery.addAll(sp.nextAction().getContent());
+		}
 		
 		// restrict domain on the general problem (All - U(subproblem domains))
+		remainingDomain.removeAll(nextQuery);
+		((SubProblemMaster) currentStrat).restrictDomain(remainingDomain);
+
 		
-		// add the general stuff to the guess list
-		return null;
+		GuesserAction masterAction = currentStrat.nextAction();
+		if (masterAction.getType() == "g") {
+			System.err.println("rly?");
+			lastSubProblemQuery = masterAction.getContent();
+			return masterAction;
+		} else {
+			// add the general stuff to the guess list
+			nextQuery.addAll(masterAction.getContent());
+		}
+		lastSubProblemQuery = new ArrayList<Integer>(nextQuery);
+		return new GuesserAction("q", lastSubProblemQuery);
 	}
 
 	private void setSubProblemsResult(ArrayList<Integer> result) {
