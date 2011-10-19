@@ -111,7 +111,7 @@ public class MapThatSet
 						
 						gsaGA = gsrCurrent.nextAction();
 						total = System.currentTimeMillis() - start;
-						System.out.println("\nnextAction - " + total + "\n");
+//						System.out.println("\nnextAction - " + total + "\n");
 						if (total > 1000) {
 //							System.exit(1);
 						}
@@ -149,7 +149,7 @@ public class MapThatSet
 							start = System.currentTimeMillis();
 							gsrCurrent.setResult( alQueryResult );
 							total = System.currentTimeMillis() - start;
-							System.out.println("\nsetResult" + (total) + "\n");
+//							System.out.println("\nsetResult" + (total) + "\n");
 							if (total > 1000) {
 //								System.exit(1);
 							}
