@@ -24,12 +24,14 @@ public class SubProblem {
 		this.range = range;
 		int n = 1;
 		restoreDomainMap = new HashMap<Integer, Integer>();
+		// i -> real
 		for (int i : domain) {
 			restoreDomainMap.put(n, i);
 			n++;
 		}
 		normalizeRangeMap = new HashMap<Integer, Integer>();
 		n = 1;
+		// real -> i
 		for (int i : range) {
 			normalizeRangeMap.put(i, n);
 			n++;

@@ -2,6 +2,7 @@ package mapthatset.g5;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import mapthatset.sim.GuesserAction;
@@ -90,23 +91,34 @@ public class ControllerStrategy extends Strategy {
 
 	}
 	
-	private void updateSubProblems() {
-		// TODO
-		// if a subproblem is solved, remove it from the list (just check
-		// the stuff in the domain and see if they all map to one...)
+	private Set<Integer> updateSubProblems() {
+		Iterator<SubProblem> iter = subproblems.iterator();
+		Set<Integer> subproblemDomains = new HashSet<Integer>();
+		while(iter.hasNext()) {
+			SubProblem sp = iter.next();
+			if (((SubProblemMaster) currentStrat).isSolved(sp)) {
+				iter.remove();
+			} else {
+				subproblemDomains.addAll(sp.getDomain());
+			}
+		}
+		Set<Integer> unmatchedDomains = new HashSet<Integer>();
+		for (int i = 1; i <= mappingLength; i++) {
+			if (!subproblemDomains.contains(i)) {
+				unmatchedDomains.add(i);
+			}
+		}
 		
-		// create a domain list of ALL - U(existing subproblem domains)
+		// TODO - get disjoint graphs from unmatched, create new subproblems
+		// and add
 		
-		// get disjoint graphs from ALL, create new subproblems
+		return unmatchedDomains;
 	}
 	
 	private GuesserAction nextActionWithSubProblems() {
-		// TODO
+		// Subproblems updated here
+		Set<Integer> unmatchedDomain = updateSubProblems();
 		Set<Integer> nextQuery = new HashSet<Integer>();
-		Set<Integer> remainingDomain = new HashSet<Integer>();
-		for (int i = 1; i <= mappingLength; i++) {
-			remainingDomain.add(i);
-		}
 		
 		// iterate through the subproblem solvers, adding all the guesses to
 		// the guess list
@@ -115,9 +127,7 @@ public class ControllerStrategy extends Strategy {
 		}
 		
 		// restrict domain on the general problem (All - U(subproblem domains))
-		remainingDomain.removeAll(nextQuery);
-		((SubProblemMaster) currentStrat).restrictDomain(remainingDomain);
-
+		((SubProblemMaster) currentStrat).restrictDomain(unmatchedDomain);
 		
 		GuesserAction masterAction = currentStrat.nextAction();
 		if (masterAction.getType() == "g") {

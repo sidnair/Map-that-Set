@@ -86,7 +86,6 @@ public class G5Guesser extends Guesser {
 	public void setResult(ArrayList<Integer> result) {
 		strategy.setResult(result);
 	}
-	
 
 	@Override
 	public String getID() {

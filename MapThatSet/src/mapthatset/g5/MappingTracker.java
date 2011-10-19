@@ -11,10 +11,12 @@ public class MappingTracker {
 	private Map<ArrayList<Integer>, ArrayList<Integer>> pastQueries;
 	private Map<Integer, Set<Integer>> possibleMappings;
 	private final int mappingLength;
+	private boolean firstReduction;
 	
 	public MappingTracker(int mappingLength) {
 		pastQueries = new HashMap<ArrayList<Integer>, ArrayList<Integer>>();
 		this.mappingLength = mappingLength;
+		firstReduction = true;
 		initPossibleMappings();
 	}
 	
@@ -37,11 +39,20 @@ public class MappingTracker {
 		for (int possibility : result) {
 			Set<Integer> possibleMappingValues = new HashSet<Integer>();
 			for (int i : query) {
-				if (possibleMappings.get(i).contains(possibility)) {
+				if (firstReduction || 
+						possibleMappings.get(i).contains(possibility)) {
 					possibleMappingValues.add(i);
 				}
 			}
 			coverage.put(possibility, possibleMappingValues);
+		}
+		
+		if (firstReduction) {
+			firstReduction = false;
+			for (int i : query) {
+				updatePossibleValues(i, coverage);
+			}
+			return;
 		}
 		
 		/*
@@ -105,9 +116,9 @@ public class MappingTracker {
 		possibleMappings = new HashMap<Integer, Set<Integer>>();
 		for (int i = 1; i <= mappingLength; i++) {
 			Set<Integer> possibleValues = new HashSet<Integer>();
-			for (int j = 1; j <= mappingLength; j++) {
-				possibleValues.add(j);
-			}
+//			for (int j = 1; j <= mappingLength; j++) {
+//				possibleValues.add(j);
+//			}
 			possibleMappings.put(i, possibleValues);
 		}
 	}
@@ -122,7 +133,7 @@ public class MappingTracker {
 	
 	public boolean isMappingKnown() {
 		for (int i = 1; i <= mappingLength; i++) {
-			if (possibleMappings.get(i).size() > 1) {
+			if (!isKnown(i)) {
 				return false;
 			}
 		}

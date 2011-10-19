@@ -113,4 +113,14 @@ public class CrossStrategy extends Strategy implements SubProblemMaster {
 		return true;
 	}
 
+	@Override
+	public boolean isSolved(SubProblem sp) {
+		for (int i : sp.getDomain()) {
+			if (!mappingTracker.isKnown(i)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 }
