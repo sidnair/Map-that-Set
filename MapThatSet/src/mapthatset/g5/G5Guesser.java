@@ -70,7 +70,7 @@ public class G5Guesser extends Guesser {
 		ArrayList<Integer> obfuscatedGuess = new ArrayList<Integer>();
 		for (int i : action.getContent()) {
 			obfuscatedGuess.add(randomLayer.getMapping(i));
-		}	
+		}
 		return new GuesserAction("q", obfuscatedGuess);
 	}
 	

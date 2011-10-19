@@ -105,6 +105,14 @@ public class PermStrategy extends Strategy {
 		}
 		
 	}
+	
+	@Override
+	protected void startNewMapping(int mappingLength, ArrayList<Integer> query,
+			ArrayList<Integer> result) {
+		// Ignore passed in results - we already know what this will be
+		// since it's a perm.
+		startNewMapping(mappingLength);
+	}
 
 	@Override
 	public GuesserAction nextAction() {

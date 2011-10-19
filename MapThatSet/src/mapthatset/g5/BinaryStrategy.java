@@ -24,11 +24,16 @@ public class BinaryStrategy extends Strategy {
 	 */
 	@Override
 	protected void startNewMapping(int mappingLength) {
-		// TODO Auto-generated method stub
 		this.mappingLength = mappingLength;
 		result = new ArrayList<Integer>();
 		for(int i=0;i<this.mappingLength;i++)
 			result.add(0);
+	}
+	
+	protected void startNewMapping(int mappingLength,
+			ArrayList<Integer> query, ArrayList<Integer> result) {
+		// Ignore initial query - doesn't provide us with any extra info.
+		startNewMapping(mappingLength);
 	}
 
 	

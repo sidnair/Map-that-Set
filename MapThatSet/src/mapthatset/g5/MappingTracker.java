@@ -20,8 +20,9 @@ public class MappingTracker {
 	
 	public void updateTracker(ArrayList<Integer> result,
 			ArrayList<Integer> currentQuery) {
+		System.out.println(currentQuery);
 		pastQueries.put(currentQuery, result);
-			reducePossibilities(currentQuery, result);
+		reducePossibilities(currentQuery, result);
 		for (ArrayList<Integer> q : pastQueries.keySet()) {
 			reducePossibilities(q, pastQueries.get(q));
 		}

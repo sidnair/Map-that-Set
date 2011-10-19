@@ -150,5 +150,11 @@ public class DisjointStrategy extends Strategy {
 		updateCurrentState();
 	}
 
+	@Override
+	protected void startNewMapping(int mappingLength, ArrayList<Integer> query,
+			ArrayList<Integer> result) {
+		startNewMapping(mappingLength);
+		mappingTracker.updateTracker(result, query);
+	}
 
 }

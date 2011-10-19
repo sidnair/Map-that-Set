@@ -25,12 +25,19 @@ public class CrossStrategy extends Strategy {
 		mappingTracker = new MappingTracker(mappingLength);
 		guessCount = new int[mappingLength];
 		guessedPairs = new HashSet<String>();
+		
+	}
+	protected void startNewMapping(int mappingLength,
+			ArrayList<Integer> query, ArrayList<Integer> result) {
+		startNewMapping(mappingLength);
+		mappingTracker.updateTracker(result, query);
 	}
 
 	@Override
 	protected GuesserAction nextAction() {
 		if (mappingTracker.isMappingKnown()) {
-			return new GuesserAction("g", mappingTracker.getCorrectMapping());
+			currentQuery = mappingTracker.getCorrectMapping();
+			return new GuesserAction("g", currentQuery);
 		}
 		int limit = (int) Math.ceil(Math.sqrt(mappingLength));
 		currentQuery = new ArrayList<Integer>();

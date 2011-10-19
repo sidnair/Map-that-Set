@@ -59,9 +59,11 @@ public class ControllerStrategy extends Strategy {
 //				currentStrat = new DisjointStrategy(DEBUG);
 				break;
 			}
-			currentStrat.startNewMapping(mappingLength);
+			currentStrat.startNewMapping(mappingLength, currentGuess, 
+					result);
 			stratKnown = true;
 		}
+
 	}
 
 	private MappingType determineMappingType(ArrayList<Integer> result,
@@ -73,6 +75,14 @@ public class ControllerStrategy extends Strategy {
 			return MappingType.BINARY;
 		}
 		return MappingType.OTHER;
+	}
+
+	@Override
+	protected void startNewMapping(int mappingLength, ArrayList<Integer> query,
+			ArrayList<Integer> result) {
+		System.out.println("Controller strat shouldn't be called with " +
+			"initial results known...");
+		System.exit(1);
 	}
 
 }
