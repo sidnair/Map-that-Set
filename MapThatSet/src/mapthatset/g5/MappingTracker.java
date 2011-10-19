@@ -160,6 +160,24 @@ public class MappingTracker {
 	}
 	*/
 	
+	public Map<Integer, Set<Integer>> getCoverage() {
+		Map<Integer, Set<Integer>> coverage =
+				new HashMap<Integer, Set<Integer>>();
+		for (int i = 1; i <= mappingLength; i++) {
+			coverage.put(i, new HashSet<Integer>());
+		}
+		// Initialize coverage.
+		for (int i = 1; i <= mappingLength; i++) {
+			Set<Integer> possibleMappingValues = possibleMappings.get(i);
+			// j is numbers mapped to
+			for (int j : possibleMappingValues) {
+				// Updates set in map by reference
+				coverage.get(j).add(i);
+			}
+		}
+		return coverage;
+	}
+	
 	public boolean isKnown(int i) {
 		return possibleMappings.get(i).size() == 1;
 	}

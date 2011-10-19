@@ -10,5 +10,7 @@ public interface SubProblemMaster {
 	public void restrictDomain(Set<Integer> domain);
 
 	boolean isSolved(SubProblem sp);
+
+	MappingTracker getMappingTracker();
 	
 }

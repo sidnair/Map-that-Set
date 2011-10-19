@@ -18,8 +18,10 @@ public class DisjointStrategy extends Strategy {
 	
 	private int initialGroupSize;
 	private int mappingLength;
+	private int guessSize;
 	private ArrayList<Integer> currentQuery;
 	private MappingTracker mappingTracker;
+	private Map<Integer, Set<Integer>> bindings;
 	private enum State {
 		INITIAL_GUESSES,
 		DISJOINT_STAGE;
@@ -36,14 +38,16 @@ public class DisjointStrategy extends Strategy {
 	}
 	private State currentState;
 	
-	public DisjointStrategy(boolean debug) {
+	public DisjointStrategy(boolean debug, int k) {
 		super(debug);
+		this.guessSize=2;
 	}
 
 	@Override
 	public void startNewMapping(int mappingLength) {
 		this.mappingLength = mappingLength;
 		mappingTracker = new MappingTracker(mappingLength);
+		bindings = new HashMap<Integer, Set<Integer>>();
 		currentState = State.INITIAL_GUESSES;
 		currentState.setLastStart(0);
 		initialGroupSize = determineInitialGroupSize();
@@ -59,10 +63,10 @@ public class DisjointStrategy extends Strategy {
 		// after previous rounds with the mapper).
 		
 		if (mappingLength < 6) {
-			return Math.max(1, mappingLength / 2);
+			return Math.min(this.guessSize,Math.max(1, mappingLength / 2));
 		}
 		if (mappingLength < 12) {
-			return Math.max(1, mappingLength / 3);
+			return Math.min(guessSize, Math.max(1, mappingLength / 3));
 		}
 		
 		// Ensure at least 4 groups
@@ -78,7 +82,7 @@ public class DisjointStrategy extends Strategy {
 				return 3;
 			}
 		}
-		return groupSize;
+		return Math.min(guessSize, groupSize);
 	}
 	
 	@Override
@@ -124,9 +128,51 @@ public class DisjointStrategy extends Strategy {
 					possiblyMappedToSet.addAll(possibleMappings.get(i));
 					currentQuery.add(i);
 				}
+				// we don't want to make a query of size one in early stage, so we look for two elements that are not 
+				// "bind together", which means we don't know either they are same or opposite
+				if (guessSize == 2 && currentQuery.size() == 1) {
+					Integer nextUnbound = getNextUnbound(currentQuery.get(0));
+					if (nextUnbound != null) {
+						currentQuery.add(nextUnbound);
+					}
+				}
 			}
 		}
+		
+		updateBindings(currentQuery);
+		
 		return currentQuery;
+	}
+	
+	private Integer getNextUnbound(int first) {
+		Set<Integer> possible = new HashSet<Integer>();
+		for (int i = 1; i <= mappingLength; i++) {
+			possible.add(i);
+		}
+		if (bindings.get(first) == null) {
+			return null;
+		}
+		possible.retainAll(bindings.get(first));
+		return (Integer) (possible.size() > 0 ? possible.toArray()[0] : null);
+	}
+	
+	private void updateBindings(ArrayList<Integer> query) {
+		Set<Integer> newlyBoundSet = new HashSet<Integer>();
+		for (int i : query) {
+			if (bindings.get(i) != null) {
+				newlyBoundSet.addAll(bindings.get(i));
+				newlyBoundSet.addAll(query);
+			}
+		}
+		for (int i : query) {
+			if (bindings.get(i) != null) {
+				for (int j : bindings.get(i)) {
+					bindings.put(j, newlyBoundSet);	
+				}
+			} else {
+				bindings.put(i, newlyBoundSet);
+			}
+		}
 	}
 	
 	private void updateCurrentState() {

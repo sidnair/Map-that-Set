@@ -3,6 +3,7 @@ package mapthatset.g5;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import mapthatset.sim.GuesserAction;
@@ -13,7 +14,7 @@ import mapthatset.sim.GuesserAction;
  */
 public class ControllerStrategy extends Strategy {
 
-	private boolean ENABLE_SUBPROBLEMS = false;
+	private boolean ENABLE_SUBPROBLEMS = true;
 	private Strategy currentStrat;
 	private boolean stratKnown;
 	private int mappingLength;
@@ -23,8 +24,7 @@ public class ControllerStrategy extends Strategy {
 	private enum MappingType {
 		BINARY, PERM, OTHER
 	}
-	private final static int CROSS_THRESHOLD = 15000;
-	private int unchecked;
+	private final static int CROSS_THRESHOLD = 3000;
 	
 	public ControllerStrategy(boolean debug) {
 		super(debug);
@@ -33,7 +33,6 @@ public class ControllerStrategy extends Strategy {
 	@Override
 	public void startNewMapping(int mappingLength) {
 		this.mappingLength = mappingLength;
-		unchecked = mappingLength;
 		stratKnown = false;
 		currentStrat = null;
 		subproblems = new ArrayList<SubProblem>();
@@ -43,7 +42,8 @@ public class ControllerStrategy extends Strategy {
 	@Override
 	public GuesserAction nextAction() {
 		if (stratKnown) {
-			if (ENABLE_SUBPROBLEMS) {
+			if (ENABLE_SUBPROBLEMS && currentStrat.supportsSubProblems()) {
+//				return currentStrat.nextAction();
 				return nextActionWithSubProblems();
 			} else {
 				return currentStrat.nextAction();
@@ -65,7 +65,7 @@ public class ControllerStrategy extends Strategy {
 	@Override
 	public void setResult(ArrayList<Integer> result) {
 		if (stratKnown) {
-			if (ENABLE_SUBPROBLEMS) {
+			if (ENABLE_SUBPROBLEMS && currentStrat.supportsSubProblems()) {
 				setSubProblemsResult(result);
 			} else {
 				currentStrat.setResult(result);
@@ -82,20 +82,16 @@ public class ControllerStrategy extends Strategy {
 				if (mappingLength < CROSS_THRESHOLD) {
 					currentStrat = new CrossStrategy(DEBUG);
 				} else {
-					currentStrat = new DisjointStrategy(DEBUG);
+					currentStrat = new SimpleStrategy(DEBUG);
 				}
-				// Currently never use disjoint strategy.
-//				 currentStrat = new DisjointStrategy(DEBUG);
 				break;
 			default:
 				System.err.println("No strategy selected...");
 				System.exit(1);
 			}
-			if (currentStrat != null) {
-				currentStrat.startNewMapping(mappingLength, currentGuess, 
-						result);
-				stratKnown = true;
-			}
+			currentStrat.startNewMapping(mappingLength, currentGuess, 
+					result);
+			stratKnown = true;
 		}
 
 	}
@@ -120,6 +116,32 @@ public class ControllerStrategy extends Strategy {
 		
 		// TODO - get disjoint graphs from unmatched, create new subproblems
 		// and add
+		List<Region> regions = DisjointGraphFinder.findDisjointGraphs(
+				mappingLength, 
+				((SubProblemMaster) currentStrat).getMappingTracker());
+		
+		for (Region r : regions) {
+			Set<Integer> overlap = new HashSet<Integer>();
+			overlap.addAll(r.domain);
+			overlap.retainAll(unmatchedDomains);
+			// Part or all of this is already being specially queried; don't
+			// interrupt.
+			if (overlap.size() != r.domain.size()) {
+				continue;
+			}
+			// Perm
+			if (r.domain.size() == r.range.size() &&
+					r.domain.size() != mappingLength) {
+				subproblems.add(new SubProblem(DEBUG, r.domain, r.range,
+						SubProblem.SubProblemStrategy.PERM));
+				System.out.println("\nPEEERM\n" + r.domain + "\n" + r.range);
+//				System.exit(1);
+			} else if (r.range.size() == 2){
+				subproblems.add(new SubProblem(DEBUG, r.domain, r.range,
+						SubProblem.SubProblemStrategy.PERM));
+				System.out.println("\nBINN\t" + r.domain + "\t" + r.range);
+			}
+		}
 		
 		return unmatchedDomains;
 	}
@@ -140,7 +162,9 @@ public class ControllerStrategy extends Strategy {
 		
 		GuesserAction masterAction = currentStrat.nextAction();
 		if (masterAction.getType() == "g") {
-			System.err.println("rly?");
+			if (subproblems.size() > 0) {
+				System.err.println("rly?");
+			}
 			lastSubProblemQuery = masterAction.getContent();
 			return masterAction;
 		} else {

@@ -126,4 +126,9 @@ public class CrossStrategy extends Strategy implements SubProblemMaster {
 		return true;
 	}
 
+	@Override
+	public MappingTracker getMappingTracker() {
+		return mappingTracker;
+	}
+
 }

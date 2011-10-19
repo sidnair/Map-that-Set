@@ -138,11 +138,10 @@ public class MapThatSet
 						else if ( strActionType.equals( "q" ) )
 						{
 							ArrayList< Integer > alQueryResult = mpnCurrent.query( alActionContent );
-							System.out.println("\n***\n");
-							long start = System.currentTimeMillis();
+//							System.out.println("\n***\n");
+//							long start = System.currentTimeMillis();
 							gsrCurrent.setResult( alQueryResult );
-							System.out.println(System.currentTimeMillis() - start);
-							System.exit(1);
+//							System.out.println(System.currentTimeMillis() - start);
 							System.out.print( alActionContent + " --> " + alQueryResult + "\t" );
 						}
 					}
