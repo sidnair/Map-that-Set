@@ -141,7 +141,7 @@ public class ControllerStrategy extends Strategy {
 			} else if (r.range.size() == 2){
 				subproblems.add(new SubProblem(DEBUG, r.domain, r.range,
 						SubProblem.SubProblemStrategy.PERM));
-				System.out.println("\nBINN\t" + r.domain + "\t" + r.range);
+//				System.out.println("\nBINN\t" + r.domain + "\t" + r.range);
 			}
 		}
 		
@@ -167,14 +167,12 @@ public class ControllerStrategy extends Strategy {
 			}
 		}
 		
+		
 		// restrict domain on the general problem (All - U(subproblem domains))
 		((SubProblemMaster) currentStrat).restrictDomain(unmatchedDomain);
 		
 		GuesserAction masterAction = currentStrat.nextAction();
 		if (masterAction.getType() == "g") {
-			if (subproblems.size() > 0) {
-				System.err.println("rly?");
-			}
 			lastSubProblemQuery = masterAction.getContent();
 			return masterAction;
 		} else {
@@ -192,7 +190,7 @@ public class ControllerStrategy extends Strategy {
 			ArrayList<Integer> relevantResults =
 					new ArrayList<Integer>(sp.getRange());
 			relevantResults.retainAll(result);
-			System.out.println(relevantResults);
+			
 			sp.setResult(relevantResults);
 		}
 		// Call set result on the main solver

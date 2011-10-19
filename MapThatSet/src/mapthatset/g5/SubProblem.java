@@ -57,20 +57,16 @@ public class SubProblem {
 	
 	public GuesserAction nextAction() {
 		GuesserAction action = strategy.nextAction();
-		System.out.println("\n\t\t" + strategy.nextAction().getContent());
 		lastGottenAction = action;
 		// Convert from 1..n to the real domain
-		ArrayList<Integer> remappedAction = new ArrayList<Integer>();
+		ArrayList<Integer> remappedActionContent = new ArrayList<Integer>();
 		for (int i : action.getContent()) {
-			remappedAction.add(restoreDomainMap.get(i));
+			remappedActionContent.add(restoreDomainMap.get(i));
 		}
 		if (action.getType().equals("g")) {
-			return new GuesserAction("g", remappedAction);
-//			System.err.println("Guessing from subproblem");
-//			System.exit(1);
+			return new GuesserAction("g", remappedActionContent);
 		}
-//		System.out.println("\n\t" + remappedAction);
-		return new GuesserAction("q", remappedAction);
+		return new GuesserAction("q", remappedActionContent);
 	}
 	
 	public void setResult(ArrayList<Integer> result) {
@@ -78,6 +74,7 @@ public class SubProblem {
 		for (int i : result) {
 			remappedResult.add(normalizeRangeMap.get(i));
 		}
+		strategy.setResult(remappedResult);
 	}
 	
 	public ArrayList<Integer> getRange() {
@@ -90,7 +87,6 @@ public class SubProblem {
 
 	public void solveSubsection(SubProblemMaster spm) {
 		ArrayList<Integer> unalignedSolution = lastGottenAction.getContent();
-		System.out.println("\n\tSOLVED: " + lastGottenAction.getContent());
 		for (int i = 1; i <= unalignedSolution.size(); i++) {
 			spm.solve(restoreDomainMap.get(i),
 					restoreRangeMap.get(unalignedSolution.get(i)));
