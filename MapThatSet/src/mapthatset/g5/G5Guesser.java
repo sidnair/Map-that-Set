@@ -9,11 +9,18 @@ public class G5Guesser extends Guesser {
 	
 	private final boolean DEBUG = false;
 	private final boolean RANDOMIZE = !DEBUG && false;
-	private Strategy strategy = new ControllerStrategy(DEBUG);
+	private Strategy strategy;
 	private RandomLayer randomLayer;
 	private int mappingLength;
 
 	public void startNewMapping(int mappingLength) {
+		// Handle special cases of map size; for the general case, use the 
+		// controller strategy.
+		if (mappingLength == 3) {
+			strategy = new ThreeStrategy(DEBUG);
+		} else {
+			strategy = new ControllerStrategy(DEBUG);
+		}
 		strategy.startNewMapping(mappingLength);
 		randomLayer = new RandomLayer(mappingLength);
 		this.mappingLength = mappingLength;

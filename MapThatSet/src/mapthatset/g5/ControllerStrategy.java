@@ -34,12 +34,16 @@ public class ControllerStrategy extends Strategy {
 		if (stratKnown) {
 			return currentStrat.nextAction();
 		} else {
-			currentGuess = new ArrayList<Integer>();
-			for (int i = 1; i <= mappingLength; i++) {
-				currentGuess.add(i);
-			}
-			return new GuesserAction("q", currentGuess);
+			return makeInitialGuess();
 		}
+	}
+	
+	private GuesserAction makeInitialGuess() {
+		currentGuess = new ArrayList<Integer>();
+		for (int i = 1; i <= mappingLength; i++) {
+			currentGuess.add(i);
+		}
+		return new GuesserAction("q", currentGuess);
 	}
 
 	@Override
@@ -80,7 +84,7 @@ public class ControllerStrategy extends Strategy {
 	@Override
 	protected void startNewMapping(int mappingLength, ArrayList<Integer> query,
 			ArrayList<Integer> result) {
-		System.out.println("Controller strat shouldn't be called with " +
+		System.err.println("Controller strat shouldn't be called with " +
 			"initial results known...");
 		System.exit(1);
 	}
