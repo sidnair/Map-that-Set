@@ -15,7 +15,7 @@ public class ControllerStrategy extends Strategy {
 	private int mappingLength;
 	private ArrayList<Integer> currentGuess;
 	private enum MappingType {
-		BINARY, PERM, OTHER
+		BINARY, PERM, DISJOINT, OTHER
 	}
 	
 	public ControllerStrategy(boolean debug) {
@@ -58,10 +58,11 @@ public class ControllerStrategy extends Strategy {
 			case PERM:
 				currentStrat = new PermStrategy(DEBUG);
 				break;
+			case DISJOINT:	
+				currentStrat = new DisjointStrategy(DEBUG,2);
+				break;
 			case OTHER:
 				currentStrat = new CrossStrategy(true);
-				// Currently never use disjoint strategy.
-//				currentStrat = new DisjointStrategy(DEBUG,2);
 				break;
 			default:
 				System.err.println("No strategy selected...");
@@ -81,6 +82,9 @@ public class ControllerStrategy extends Strategy {
 		}
 		if (result.size() == 2 ) {
 			return MappingType.BINARY;
+		}
+		if (result.size()<=7){
+			return MappingType.DISJOINT;
 		}
 		return MappingType.OTHER;
 	}
